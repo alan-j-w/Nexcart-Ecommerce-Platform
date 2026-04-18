@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import API from "@/lib/api";
-import { useAuth } from "@/lib/AuthContext";
 import { Category } from "@/lib/types";
 import Toast from "@/components/Toast";
 
@@ -11,8 +9,6 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 
 export default function AdminCategories() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,14 +29,8 @@ export default function AdminCategories() {
   const [isCropping, setIsCropping] = useState(false);
 
   useEffect(() => {
-    if (!authLoading) {
-      if (!isAuthenticated || user?.role !== "admin") {
-        router.push("/login");
-      } else {
-        fetchCategories();
-      }
-    }
-  }, [isAuthenticated, authLoading, user, router]);
+    fetchCategories();
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -165,16 +155,14 @@ export default function AdminCategories() {
     setFileStats(null);
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="mm-loading">
-        <div className="mm-spinner" />
-      </div>
+      <div style={{ padding: "60px", textAlign: "center", color: "#94A3B8" }}>Loading...</div>
     );
   }
 
   return (
-    <div className="mm-dashboard">
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {toastMsg && <Toast message={toastMsg.message} type={toastMsg.type} />}
       {/* Cropper Modal */}
       {isCropping && imageSrc && (
@@ -219,26 +207,7 @@ export default function AdminCategories() {
         </div>
       )}
 
-      <div className="mm-dashboard-header">
-        <div>
-          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: "28px", height: "28px", color: "#6D28D9" }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
-            </svg>
-            Category Management
-          </h1>
-          <p style={{ fontSize: "14px", color: "#6B7280", marginTop: "4px" }}>
-            Add and manage product categories dynamically.
-          </p>
-        </div>
-        <button
-          className="mm-btn-secondary"
-          style={{ width: "auto", padding: "10px 24px" }}
-          onClick={() => router.push("/admin")}
-        >
-          ← Back to Admin
-        </button>
-      </div>
+
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>     
         {/* Add/Edit Form */}

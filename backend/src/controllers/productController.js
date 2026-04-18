@@ -1,6 +1,19 @@
 const Product = require("../models/Product");
 const cloudinary = require("../config/cloudinary");
 
+// Helper: upload an array of base64 strings to Cloudinary
+async function uploadImages(imageArray) {
+  const urls = [];
+  for (const b64 of imageArray) {
+    if (!b64) continue;
+    const uploadRes = await cloudinary.uploader.upload(b64, {
+      folder: "nexcart_products",
+    });
+    urls.push(uploadRes.secure_url);
+  }
+  return urls;
+}
+
 // Update product (vendor only, must own product)
 exports.updateProduct = async (req, res) => {
   try {
@@ -9,7 +22,7 @@ exports.updateProduct = async (req, res) => {
     if (product.vendor.toString() !== req.user.id)
       return res.status(403).json({ error: "Not authorized" });
 
-    const { name, description, price, stock, category, image } = req.body;
+    const { name, description, price, stock, category, images: newImages } = req.body;
 
     if (name !== undefined) product.name = name;
     if (description !== undefined) product.description = description;
@@ -17,12 +30,13 @@ exports.updateProduct = async (req, res) => {
     if (stock !== undefined) product.stock = Number(stock);
     if (category !== undefined) product.category = category;
 
-    // If a new image (base64) was provided, upload it to Cloudinary
-    if (image) {
-      const uploadRes = await cloudinary.uploader.upload(image, {
-        folder: "nexcart_products",
-      });
-      product.images = [uploadRes.secure_url];
+    // newImages is an array of base64 strings or existing URLs
+    // base64 strings start with "data:image/"; existing URLs start with "http"
+    if (Array.isArray(newImages) && newImages.length > 0) {
+      const base64Items = newImages.filter((img) => img.startsWith("data:image/"));
+      const existingUrls = newImages.filter((img) => img.startsWith("http"));
+      const uploaded = await uploadImages(base64Items);
+      product.images = [...existingUrls, ...uploaded];
     }
 
     await product.save();
@@ -35,13 +49,15 @@ exports.updateProduct = async (req, res) => {
 // Add product
 exports.createProduct = async (req, res) => {
   try {
-    let images = [];
-    if (req.body.image) {
-      const uploadRes = await cloudinary.uploader.upload(req.body.image, {
-        folder: "nexcart_products"
-      });
-      images.push(uploadRes.secure_url);
+    // Accept either a single "image" (legacy) or "images" array
+    let rawImages = [];
+    if (Array.isArray(req.body.images) && req.body.images.length > 0) {
+      rawImages = req.body.images;
+    } else if (req.body.image) {
+      rawImages = [req.body.image];
     }
+
+    const images = await uploadImages(rawImages);
 
     const product = await Product.create({
       name: req.body.name,
@@ -49,8 +65,8 @@ exports.createProduct = async (req, res) => {
       price: req.body.price,
       stock: req.body.stock,
       category: req.body.category,
-      images: images,
-      vendor: req.user.id
+      images,
+      vendor: req.user.id,
     });
 
     res.json(product);

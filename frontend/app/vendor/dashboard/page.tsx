@@ -4,536 +4,144 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import API from "@/lib/api";
 import { useAuth } from "@/lib/AuthContext";
-import { Product } from "@/lib/types";
 
-export default function VendorDashboard() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false); // start false — only set true when we actually fetch
-
-  // ── Add Product modal ──────────────────────────────────────────────
-  const [showModal, setShowModal] = useState(false);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [category, setCategory] = useState("");
-  const [imageBase64, setImageBase64] = useState<string>("");
-  const [formError, setFormError] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [fileStats, setFileStats] = useState<{ dimensions: string, size: string } | null>(null);
-
-  // ── Edit Product modal ─────────────────────────────────────────────
-  const [editProduct, setEditProduct] = useState<Product | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-  const [editPrice, setEditPrice] = useState("");
-  const [editStock, setEditStock] = useState("");
-  const [editCategory, setEditCategory] = useState("");
-  const [editImageBase64, setEditImageBase64] = useState<string>("");
-  const [editImagePreview, setEditImagePreview] = useState<string>("");
-  const [editError, setEditError] = useState("");
-  const [editSaving, setEditSaving] = useState(false);
-  const [editFileStats, setEditFileStats] = useState<{ dimensions: string, size: string } | null>(null);
-
-  useEffect(() => {
-    if (authLoading) return; // wait for auth to resolve
-
-    if (!isAuthenticated || user?.role !== "vendor") {
-      router.replace("/login"); // replace so back button doesn't loop
-      return;
-    }
-
-    fetchProducts();
-  }, [isAuthenticated, authLoading, user]);
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await API.get("/products/vendor");
-      setProducts(res.data);
-    } catch {
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ── Open edit modal, pre-fill fields ──────────────────────────────
-  const openEdit = (product: Product) => {
-    setEditProduct(product);
-    setEditName(product.name);
-    setEditDescription(product.description || "");
-    setEditPrice(String(product.price));
-    setEditStock(String(product.stock));
-    setEditCategory(product.category || "");
-    setEditImageBase64("");
-    setEditImagePreview(product.images?.[0] || "");
-    setEditError("");
-    setEditFileStats(null);
-  };
-
-  const closeEdit = () => {
-    setEditProduct(null);
-    setEditFileStats(null);
-  };
-
-  // ── Submit edit ───────────────────────────────────────────────────
-  const handleEditProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editProduct) return;
-    setEditError("");
-    setEditSaving(true);
-    try {
-      await API.put(`/products/${editProduct._id}`, {
-        name: editName,
-        description: editDescription,
-        price: Number(editPrice),
-        stock: Number(editStock),
-        category: editCategory,
-        ...(editImageBase64 ? { image: editImageBase64 } : {}),
-      });
-      closeEdit();
-      await fetchProducts();
-    } catch (err: any) {
-      setEditError(err.response?.data?.error || "Failed to update product");
-    } finally {
-      setEditSaving(false);
-    }
-  };
-
-  // ── Create product ────────────────────────────────────────────────
-  const handleCreateProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormError("");
-    setSaving(true);
-    try {
-      await API.post("/products", {
-        name,
-        description,
-        price: Number(price),
-        stock: Number(stock),
-        category,
-        image: imageBase64,
-      });
-      setShowModal(false);
-      setName(""); setDescription(""); setPrice("");
-      setStock(""); setCategory(""); setImageBase64("");
-      setFileStats(null);
-      await fetchProducts();
-    } catch (err: any) {
-      setFormError(err.response?.data?.error || "Failed to create product");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  // Auth still resolving → show spinner
-  if (authLoading) {
-    return (
-      <div className="mm-loading">
-        <div className="mm-spinner" />
-      </div>
-    );
-  }
-
-  // Auth done but not a vendor → redirect is triggered in useEffect, render nothing
-  if (!isAuthenticated || user?.role !== "vendor") {
-    return null;
-  }
-
-  // Products loading → show spinner
-  if (loading) {
-    return (
-      <div className="mm-loading">
-        <div className="mm-spinner" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="mm-dashboard">
-      <div className="mm-dashboard-header">
-        <div>
-          <h1>🏪 Seller Central</h1>
-          <p style={{ fontSize: "14px", color: "#6B7280", marginTop: "4px" }}>
-            Welcome back, {user?.name}! Manage your products and orders.
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <button
-            className="mm-btn-secondary"
-            style={{ width: "auto", padding: "10px 24px" }}
-            onClick={async () => {
-              router.push("/");
-            }}
-          >
-            Sign Out
-          </button>
-          <button
-            className="mm-btn-primary"
-            style={{ width: "auto", padding: "10px 24px" }}
-            onClick={() => setShowModal(true)}
-          >
-            + Add Product
-          </button>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "24px" }}>
-        <div style={{ background: "#fff", borderRadius: "8px", padding: "20px", border: "1px solid #E5E7EB" }}>
-          <p style={{ fontSize: "13px", color: "#6B7280" }}>Total Products</p>
-          <p style={{ fontSize: "32px", fontWeight: 800, color: "#6D28D9" }}>{products.length}</p>
-        </div>
-        <div style={{ background: "#fff", borderRadius: "8px", padding: "20px", border: "1px solid #E5E7EB" }}>
-          <p style={{ fontSize: "13px", color: "#6B7280" }}>Active Products</p>
-          <p style={{ fontSize: "32px", fontWeight: 800, color: "#059669" }}>
-            {products.filter((p) => p.isActive).length}
-          </p>
-        </div>
-        <div style={{ background: "#fff", borderRadius: "8px", padding: "20px", border: "1px solid #E5E7EB" }}>
-          <p style={{ fontSize: "13px", color: "#6B7280" }}>Total Stock</p>
-          <p style={{ fontSize: "32px", fontWeight: 800, color: "#F59E0B" }}>
-            {products.reduce((sum, p) => sum + p.stock, 0).toLocaleString()}
-          </p>
-        </div>
-      </div>
-
-      {/* Products Table */}
-      {products.length === 0 ? (
-        <div className="mm-empty" style={{ background: "#fff", borderRadius: "8px", border: "1px solid #E5E7EB" }}>
-          <div className="mm-empty-icon">📦</div>
-          <h3 style={{ fontSize: "18px", fontWeight: 700 }}>No products yet</h3>
-          <p style={{ fontSize: "14px" }}>Click &quot;Add Product&quot; to list your first product.</p>
-        </div>
-      ) : (
-        <table className="mm-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div
-                      style={{
-                        width: "50px", height: "50px",
-                        background: "#F3F4F6", borderRadius: "6px",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: "24px", flexShrink: 0, overflow: "hidden",
-                      }}
-                    >
-                      {product.images?.[0] ? (
-                        <img
-                          src={product.images[0]}
-                          alt=""
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                      ) : "📦"}
-                    </div>
-                    <div>
-                      <div style={{ fontWeight: 600 }}>{product.name}</div>
-                      <div style={{ fontSize: "12px", color: "#6B7280" }}>
-                        {product.description?.slice(0, 60)}...
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span className="mm-badge mm-badge-info">{product.category || "N/A"}</span>
-                </td>
-                <td style={{ fontWeight: 700 }}>₹{product.price.toLocaleString("en-IN")}</td>
-                <td>
-                  <span style={{ color: product.stock > 0 ? "#059669" : "#DC2626", fontWeight: 600 }}>
-                    {product.stock}
-                  </span>
-                </td>
-                <td>
-                  <span className={`mm-badge ${product.isActive ? "mm-badge-success" : "mm-badge-error"}`}>
-                    {product.isActive ? "Active" : "Inactive"}
-                  </span>
-                </td>
-                <td>
-                  <button
-                    onClick={() => openEdit(product)}
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: "6px",
-                      padding: "6px 16px", borderRadius: "6px", border: "1px solid #6D28D9",
-                      background: "transparent", color: "#6D28D9", fontSize: "13px",
-                      fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "#6D28D9";
-                      (e.currentTarget as HTMLButtonElement).style.color = "#fff";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                      (e.currentTarget as HTMLButtonElement).style.color = "#6D28D9";
-                    }}
-                  >
-                    ✏️ Edit
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      {/* ── Add Product Modal ───────────────────────────────────────── */}
-      {showModal && (
-        <div className="mm-modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="mm-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "600px", width: "100%", padding: "30px" }}>
-            <h2>Add New Product</h2>
-            {formError && <div className="mm-auth-error">{formError}</div>}
-            <form onSubmit={handleCreateProduct}>
-              <label>Product Name</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Wireless Bluetooth Headphones" required />
-
-              <label>Description</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your product..." required />
-
-              <label>Category</label>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} required>
-                <option value="">Select category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Home">Home &amp; Kitchen</option>
-                <option value="Books">Books</option>
-                <option value="Sports">Sports</option>
-                <option value="Beauty">Beauty</option>
-                <option value="Toys">Toys &amp; Games</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <label>Price (₹)</label>
-              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)}
-                placeholder="999" min="1" required />
-
-              <label>Stock Quantity</label>
-              <input type="number" value={stock} onChange={(e) => setStock(e.target.value)}
-                placeholder="100" min="0" required />
-
-              <label>Product Image</label>
-              <ImageUploadBox 
-                imagePreview={imageBase64} 
-                onImageChange={setImageBase64} 
-                onStatsChange={setFileStats}
-              />
-              {fileStats && (
-                <p style={{ fontSize: "11px", color: "#6B7280", marginTop: "-12px", marginBottom: "16px", display: "flex", gap: "12px" }}>
-                  <span><strong>Ratio:</strong> {fileStats.dimensions}</span>
-                  <span><strong>Size:</strong> {fileStats.size}</span>
-                </p>
-              )}
-
-              <div className="mm-modal-actions">
-                <button type="submit" className="mm-btn-primary" disabled={saving}>
-                  {saving ? "Creating..." : "Create Product"}
-                </button>
-                <button type="button" className="mm-btn-secondary" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ── Edit Product Modal ──────────────────────────────────────── */}
-      {editProduct && (
-        <div className="mm-modal-overlay" onClick={closeEdit}>
-          <div
-            className="mm-modal"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "620px", width: "100%", padding: "30px" }}
-          >
-            {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-              <h2 style={{ margin: 0 }}>✏️ Edit Product</h2>
-              <button
-                onClick={closeEdit}
-                style={{
-                  background: "none", border: "none", fontSize: "22px",
-                  cursor: "pointer", color: "#6B7280", lineHeight: 1,
-                }}
-              >✕</button>
-            </div>
-
-            {editError && <div className="mm-auth-error">{editError}</div>}
-
-            <form onSubmit={handleEditProduct}>
-              <label>Product Name</label>
-              <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} required />
-
-              <label>Description</label>
-              <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} required />
-
-              <label>Category</label>
-              <select value={editCategory} onChange={(e) => setEditCategory(e.target.value)} required>
-                <option value="">Select category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Home">Home &amp; Kitchen</option>
-                <option value="Books">Books</option>
-                <option value="Sports">Sports</option>
-                <option value="Beauty">Beauty</option>
-                <option value="Toys">Toys &amp; Games</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-                <div>
-                  <label>Price (₹)</label>
-                  <input type="number" value={editPrice} onChange={(e) => setEditPrice(e.target.value)}
-                    min="1" required />
-                </div>
-                <div>
-                  <label>Stock Quantity</label>
-                  <input type="number" value={editStock} onChange={(e) => setEditStock(e.target.value)}
-                    min="0" required />
-                </div>
-              </div>
-
-              {/* Image upload with existing image preview */}
-              <label style={{ display: "block", marginTop: "8px" }}>Product Photo</label>
-
-              {/* Show current image if no new image selected */}
-              {editImagePreview && !editImageBase64 && (
-                <div style={{ marginBottom: "12px" }}>
-                  <p style={{ fontSize: "12px", color: "#6B7280", marginBottom: "6px" }}>Current photo:</p>
-                  <img
-                    src={editImagePreview}
-                    alt="Current product"
-                    style={{
-                      height: "100px", borderRadius: "8px",
-                      border: "1px solid #E5E7EB", objectFit: "cover",
-                    }}
-                  />
-                </div>
-              )}
-
-              <ImageUploadBox
-                imagePreview={editImageBase64}
-                onImageChange={setEditImageBase64}
-                onStatsChange={setEditFileStats}
-                placeholder={editImagePreview ? "Click to replace current photo" : "Click or drag image here"}
-              />
-
-              {editFileStats && (
-                <p style={{ fontSize: "11px", color: "#6B7280", marginTop: "-12px", marginBottom: "16px", display: "flex", gap: "12px" }}>
-                  <span><strong>Ratio:</strong> {editFileStats.dimensions}</span>
-                  <span><strong>Size:</strong> {editFileStats.size}</span>
-                </p>
-              )}
-
-              {editImageBase64 && (
-                <button
-                  type="button"
-                  onClick={() => setEditImageBase64("")}
-                  style={{
-                    fontSize: "12px", color: "#DC2626", background: "none",
-                    border: "none", cursor: "pointer", marginTop: "-8px", marginBottom: "8px",
-                  }}
-                >
-                  ✕ Remove new photo (keep current)
-                </button>
-              )}
-
-              <div className="mm-modal-actions">
-                <button type="submit" className="mm-btn-primary" disabled={editSaving}>
-                  {editSaving ? "Saving..." : "Save Changes"}
-                </button>
-                <button type="button" className="mm-btn-secondary" onClick={closeEdit}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+interface Stats {
+  totalProducts: number;
+  activeProducts: number;
+  totalStock: number;
+  totalOrders: number;
+  totalEarnings: number;
+  recentOrders: any[];
 }
 
-// ── Reusable image upload box ────────────────────────────────────────
-function ImageUploadBox({
-  imagePreview,
-  onImageChange,
-  onStatsChange,
-  placeholder = "Click or drag image here",
-}: {
-  imagePreview: string;
-  onImageChange: (b64: string) => void;
-  onStatsChange?: (stats: { dimensions: string, size: string } | null) => void;
-  placeholder?: string;
-}) {
+const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
+  pending:   { bg: "#FEF3C7", color: "#92400E" },
+  paid:      { bg: "#D1FAE5", color: "#065F46" },
+  shipped:   { bg: "#DBEAFE", color: "#1E40AF" },
+  delivered: { bg: "#EDE9FE", color: "#5B21B6" },
+};
+
+export default function VendorDashboard() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [products, orders, earnings] = await Promise.all([
+          API.get("/products/vendor"),
+          API.get("/orders/vendor"),
+          API.get("/orders/vendor/earnings"),
+        ]);
+        const prods = products.data;
+        const ords = orders.data;
+        const earn = earnings.data;
+        setStats({
+          totalProducts: prods.length,
+          activeProducts: prods.filter((p: any) => p.isActive).length,
+          totalStock: prods.reduce((s: number, p: any) => s + p.stock, 0),
+          totalOrders: ords.length,
+          totalEarnings: earn.totalEarnings,
+          recentOrders: ords.slice(0, 5),
+        });
+      } catch {} finally { setLoading(false); }
+    };
+    fetchAll();
+  }, []);
+
+  const cards = [
+    { label: "Total Earnings", value: `₹${(stats?.totalEarnings || 0).toLocaleString("en-IN")}`, color: "#FBBF24", href: "/vendor/earnings",
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> },
+    { label: "Total Orders", value: stats?.totalOrders || 0, color: "#6D28D9", href: "/vendor/orders",
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> },
+    { label: "Active Products", value: stats?.activeProducts || 0, color: "#10B981", href: "/vendor/products",
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8L12 3 3 8v8l9 5 9-5V8z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> },
+    { label: "Total Stock Units", value: stats?.totalStock?.toLocaleString("en-IN") || 0, color: "#06B6D4", href: "/vendor/products",
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg> },
+  ];
+
   return (
-    <div
-      style={{
-        border: "2px dashed #D1D5DB", borderRadius: "8px",
-        padding: "24px", textAlign: "center", cursor: "pointer",
-        position: "relative", background: imagePreview ? "#F9FAFB" : "#FAFAFA",
-        marginBottom: "16px", transition: "border-color 0.2s",
-      }}
-      onMouseEnter={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "#6D28D9")}
-      onMouseLeave={(e) => ((e.currentTarget as HTMLDivElement).style.borderColor = "#D1D5DB")}
-    >
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const result = reader.result as string;
-              onImageChange(result);
-              
-              const img = new Image();
-              img.onload = () => {
-                if (onStatsChange) {
-                  onStatsChange({
-                    dimensions: `${img.width} x ${img.height} px`,
-                    size: `${sizeInMB} MB`
-                  });
-                }
-              };
-              img.src = result;
-            };
-            reader.readAsDataURL(file);
-          }
-        }}
-        style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
-      />
-      {imagePreview ? (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <img src={imagePreview} alt="Preview"
-            style={{ maxHeight: "140px", borderRadius: "6px", objectFit: "contain" }} />
-          <p style={{ fontSize: "12px", color: "#6D28D9", marginTop: "8px", fontWeight: 600 }}>
-            Click to change image
-          </p>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* Welcome */}
+      <div style={{ background: "linear-gradient(135deg, #6D28D9 0%, #4F46E5 100%)", borderRadius: "14px", padding: "24px 28px", color: "#fff" }}>
+        <h2 style={{ margin: 0, fontSize: "20px", fontWeight: 800 }}>Welcome back, {user?.name?.split(" ")[0]}!</h2>
+        <p style={{ margin: "6px 0 16px", opacity: 0.85, fontSize: "14px" }}>Here&apos;s what&apos;s happening with your store today.</p>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={() => router.push("/vendor/products?add=1")} style={{
+            padding: "8px 18px", borderRadius: "8px", border: "none", cursor: "pointer",
+            background: "#fff", color: "#6D28D9", fontWeight: 700, fontSize: "13px",
+          }}>
+            + Add Product
+          </button>
+          <button onClick={() => router.push("/vendor/orders")} style={{
+            padding: "8px 18px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.4)", cursor: "pointer",
+            background: "transparent", color: "#fff", fontWeight: 600, fontSize: "13px",
+          }}>
+            View Orders
+          </button>
         </div>
+      </div>
+
+      {/* Stat cards */}
+      {loading ? (
+        <div style={{ textAlign: "center", color: "#94A3B8", padding: "40px" }}>Loading stats...</div>
       ) : (
-        <div>
-          <div style={{ fontSize: "30px", marginBottom: "6px" }}>📸</div>
-          <p style={{ fontWeight: 600, color: "#4B5563", fontSize: "14px" }}>{placeholder}</p>
-          <p style={{ fontSize: "12px", color: "#9CA3AF", marginTop: "4px" }}>PNG, JPG, WEBP up to 5 MB</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px" }}>
+          {cards.map(c => (
+            <div key={c.label} onClick={() => router.push(c.href)} style={{
+              background: "#fff", borderRadius: "12px", padding: "20px",
+              border: "1px solid #E2E8F0", cursor: "pointer",
+              transition: "box-shadow 0.15s, transform 0.15s",
+              display: "flex", flexDirection: "column", gap: "10px",
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 16px rgba(109,40,217,0.1)"; (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = ""; (e.currentTarget as HTMLDivElement).style.transform = ""; }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <span style={{ fontSize: "12px", color: "#94A3B8", fontWeight: 500 }}>{c.label}</span>
+                <div style={{ color: c.color, background: c.color + "18", padding: "6px", borderRadius: "8px" }}>{c.icon}</div>
+              </div>
+              <div style={{ fontSize: "28px", fontWeight: 800, color: "#1E293B" }}>{c.value}</div>
+            </div>
+          ))}
         </div>
       )}
+
+      {/* Recent Orders */}
+      <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", overflow: "hidden" }}>
+        <div style={{ padding: "16px 20px", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "#1E293B" }}>Recent Orders</h3>
+          <a href="/vendor/orders" style={{ fontSize: "13px", color: "#6D28D9", fontWeight: 600 }}>View all →</a>
+        </div>
+        {!stats?.recentOrders?.length ? (
+          <div style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>No orders yet</div>
+        ) : (
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #E2E8F0" }}>
+                {["Order ID", "Customer", "Items", "Earnings", "Status"].map(h => (
+                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {stats.recentOrders.map((o: any) => (
+                <tr key={o._id} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                  <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px", fontFamily: "monospace" }}>#{o._id.slice(-8).toUpperCase()}</td>
+                  <td style={{ padding: "12px 16px", color: "#1E293B", fontSize: "13px", fontWeight: 600 }}>{o.user?.name || "Customer"}</td>
+                  <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px" }}>{o.items?.length} item{o.items?.length !== 1 ? "s" : ""}</td>
+                  <td style={{ padding: "12px 16px", color: "#059669", fontWeight: 700 }}>₹{o.vendorTotal?.toLocaleString("en-IN")}</td>
+                  <td style={{ padding: "12px 16px" }}>
+                    <span style={{ padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, ...(STATUS_STYLE[o.status] || {}) }}>{o.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

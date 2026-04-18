@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import API from "@/lib/api";
-import { useAuth } from "@/lib/AuthContext";
 import { Banner } from "@/lib/types";
 import Toast from "@/components/Toast";
 
@@ -11,8 +9,6 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 
 export default function AdminBanners() {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const router = useRouter();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,14 +31,8 @@ export default function AdminBanners() {
   const [isCropping, setIsCropping] = useState(false);
 
   useEffect(() => {
-    if (!authLoading) {
-      if (!isAuthenticated || user?.role !== "admin") {
-        router.push("/login");
-      } else {
-        fetchBanners();
-      }
-    }
-  }, [isAuthenticated, authLoading, user, router]);
+    fetchBanners();
+  }, []);
 
   const fetchBanners = async () => {
     try {
@@ -157,16 +147,12 @@ export default function AdminBanners() {
     setFileStats(null);
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="mm-loading">
-        <div className="mm-spinner" />
-      </div>
-    );
+  if (loading) {
+    return <div style={{ padding: "60px", textAlign: "center", color: "#94A3B8" }}>Loading...</div>;
   }
 
   return (
-    <div className="mm-dashboard">
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {toastMsg && <Toast message={toastMsg.message} type={toastMsg.type} />}
       {/* Cropper Modal */}
       {isCropping && imageSrc && (
@@ -210,26 +196,7 @@ export default function AdminBanners() {
         </div>
       )}
 
-      <div className="mm-dashboard-header">
-        <div>
-          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: "28px", height: "28px", color: "#6D28D9" }}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-            </svg>
-            Banner Management
-          </h1>
-          <p style={{ fontSize: "14px", color: "#6B7280", marginTop: "4px" }}>
-            Add and manage heroic banners for the homepage.
-          </p>
-        </div>
-        <button
-          className="mm-btn-secondary"
-          style={{ width: "auto", padding: "10px 24px" }}
-          onClick={() => router.push("/admin")}
-        >
-          ← Back to Admin
-        </button>
-      </div>
+
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>     
         {/* Add/Edit Form */}

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/AuthContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import ConditionalShell from "@/components/ConditionalShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +32,7 @@ export default function RootLayout({
     >
       <body>
         <AuthProvider>
-          <Header />
-          <main style={{ minHeight: "60vh" }}>{children}</main>
-          <Footer />
+          <ConditionalShell>{children}</ConditionalShell>
         </AuthProvider>
       </body>
     </html>
