@@ -80,7 +80,7 @@ exports.getVendorOrders = async (req, res) => {
       ),
       vendorTotal: order.items
         .filter((item) => item.vendor?.toString() === req.user.id)
-        .reduce((sum, item) => sum + item.price * item.quantity, 0),
+        .reduce((sum, item) => sum + item.price * item.quantity * 0.9, 0),
     }));
 
     res.json(filtered);
@@ -108,7 +108,8 @@ exports.getVendorEarnings = async (req, res) => {
       if (vendorItems.length === 0) continue;
       totalOrders++;
       for (const item of vendorItems) {
-        const amount = item.price * item.quantity;
+        // Vendor gets 90% of the sale, 10% goes to Admin
+        const amount = item.price * item.quantity * 0.9;
         totalEarnings += amount;
         const pid = item.product?._id?.toString();
         if (pid) {

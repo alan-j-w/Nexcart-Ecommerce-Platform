@@ -128,19 +128,19 @@ export default function Header() {
                   </>
                 ) : (
                   <>
-                    <Link href="/account" className="mm-dropdown-item" onClick={() => setShowDropdown(false)}>
+                    <Link href="/account" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
                       Your Account
                     </Link>
-                    <Link href="/orders" className="mm-dropdown-item" onClick={() => setShowDropdown(false)}>
+                    <Link href="/orders" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
                       Your Orders
                     </Link>
                     {user?.role === "vendor" && (
-                      <Link href="/vendor/dashboard" className="mm-dropdown-item" onClick={() => setShowDropdown(false)}>
+                      <Link href="/vendor/dashboard" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
                         Vendor Dashboard
                       </Link>
                     )}
                     {user?.role === "admin" && (
-                      <Link href="/admin" className="mm-dropdown-item" onClick={() => setShowDropdown(false)}>
+                      <Link href="/admin" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
                         Admin Panel
                       </Link>
                     )}
@@ -162,13 +162,13 @@ export default function Header() {
           </div>
 
           {/* Returns & Orders */}
-          <Link href="/orders" className="mm-nav-item" id="orders-nav">
+          <Link href="/orders" className="mm-nav-item" id="orders-nav" prefetch={false}>
             <span className="mm-nav-label">Returns</span>
             <span className="mm-nav-value">& Orders</span>
           </Link>
 
           {/* Cart */}
-          <Link href="/cart" className="mm-cart-btn" id="cart-nav">
+          <Link href="/cart" className="mm-cart-btn" id="cart-nav" prefetch={false}>
             <span className="mm-cart-count">{cartCount}</span>
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="9" cy="21" r="1" />
@@ -182,15 +182,15 @@ export default function Header() {
 
       {/* Sub-header / Category Navigation */}
       <nav className="mm-subheader">
-        <Link href="/" className="mm-subheader-item">☰ All</Link>
-        <Link href="/search?q=electronics" className="mm-subheader-item">Electronics</Link>
-        <Link href="/search?q=fashion" className="mm-subheader-item">Fashion</Link>
-        <Link href="/search?q=home" className="mm-subheader-item">Home & Kitchen</Link>
-        <Link href="/search?q=books" className="mm-subheader-item">Books</Link>
-        <Link href="/search?q=sports" className="mm-subheader-item">Sports</Link>
-        <Link href="/search?q=beauty" className="mm-subheader-item">Beauty</Link>
-        <Link href="/search?q=toys" className="mm-subheader-item">Toys & Games</Link>
-        <Link href="/vendor/dashboard" className="mm-subheader-item">Sell on Nexcart</Link>
+        <Link href="/" className="mm-subheader-item" prefetch={false}>☰ All</Link>
+        <Link href="/search?q=electronics" className="mm-subheader-item" prefetch={false}>Electronics</Link>
+        <Link href="/search?q=fashion" className="mm-subheader-item" prefetch={false}>Fashion</Link>
+        <Link href="/search?q=home" className="mm-subheader-item" prefetch={false}>Home & Kitchen</Link>
+        <Link href="/search?q=books" className="mm-subheader-item" prefetch={false}>Books</Link>
+        <Link href="/search?q=sports" className="mm-subheader-item" prefetch={false}>Sports</Link>
+        <Link href="/search?q=beauty" className="mm-subheader-item" prefetch={false}>Beauty</Link>
+        <Link href="/search?q=toys" className="mm-subheader-item" prefetch={false}>Toys & Games</Link>
+        <Link href="/vendor/dashboard" className="mm-subheader-item" prefetch={false}>Sell on Nexcart</Link>
         <span className="mm-subheader-item" style={{ color: "#FBBF24" }}>Today&apos;s Deals</span>
       </nav>
     </header>

@@ -9,6 +9,7 @@ interface Stats {
   totalProducts: number;
   totalOrders: number;
   totalRevenue: number;
+  adminRevenue: number;
   recentOrders: any[];
 }
 
@@ -60,10 +61,17 @@ export default function AdminOverview() {
 
   const cards = [
     {
-      label: "Total Revenue",
+      label: "Platform GMV",
       value: `₹${(stats?.totalRevenue || 0).toLocaleString("en-IN")}`,
+      color: "#64748B",
+      sub: "All-time total sales",
+      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>,
+    },
+    {
+      label: "Admin Revenue",
+      value: `₹${(stats?.adminRevenue || 0).toLocaleString("en-IN")}`,
       color: "#FBBF24",
-      sub: "All-time platform GMV",
+      sub: "10% platform commission",
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>,
     },
     {

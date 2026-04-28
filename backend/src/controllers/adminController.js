@@ -85,6 +85,7 @@ exports.getStats = async (req, res) => {
     ]);
 
     const totalRevenue = revenueResult[0]?.total || 0;
+    const adminRevenue = totalRevenue * 0.1; // 10% commission
 
     res.json({
       totalVendors,
@@ -92,6 +93,7 @@ exports.getStats = async (req, res) => {
       totalProducts,
       totalOrders,
       totalRevenue,
+      adminRevenue,
       recentOrders,
     });
   } catch (err) {

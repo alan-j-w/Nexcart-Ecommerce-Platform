@@ -23,6 +23,54 @@ exports.register = async (req, res) => {
   }
 };
 
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// Google Login
+exports.googleLogin = async (req, res) => {
+  try {
+    const { idToken } = req.body;
+
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if not exists
+      user = await User.create({
+        name,
+        email,
+        password: Math.random().toString(36).slice(-10), // Random password for social login
+        role: "customer",
+        isApproved: true,
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Login
 exports.login = async (req, res) => {
   try {

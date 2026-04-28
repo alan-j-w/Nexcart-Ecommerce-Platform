@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import API from "@/lib/api";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,6 +82,28 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+
+        <div style={{ margin: "20px 0", textAlign: "center", position: "relative" }}>
+          <hr style={{ border: "0", borderTop: "1px solid #E5E7EB" }} />
+          <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 10px", fontSize: "12px", color: "#6B7280" }}>OR</span>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              if (credentialResponse.credential) {
+                googleLogin(credentialResponse.credential)
+                  .then(() => router.push("/"))
+                  .catch((err) => setError("Google login failed."));
+              }
+            }}
+            onError={() => {
+              setError("Google login failed.");
+            }}
+            useOneTap
+            use_fedcm_for_prompt={false}
+          />
+        </div>
 
         <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "16px" }}>
           By continuing, you agree to Nexcart&apos;s Conditions of Use and Privacy Notice.

@@ -40,7 +40,7 @@ export default async function Home() {
       {/* Category Cards — overlapping banner */}
       <div className="mm-categories-grid">
         {categories.map((cat) => (
-          <Link href={`/search?category=${cat.slug}`} key={cat._id} style={{ textDecoration: "none" }}>
+          <Link href={`/search?category=${cat.slug}`} key={cat._id} style={{ textDecoration: "none" }} prefetch={false}>
             <div className="mm-category-card">
               <h3>{cat.name}</h3>
               <div className="mm-category-card-image">
@@ -77,7 +77,7 @@ export default async function Home() {
             Limited-time discounts across all categories
           </div>
         </div>
-        <Link href="/search?q=" className="mm-hero-cta" style={{ fontSize: "14px", padding: "10px 24px" }}>
+        <Link href="/search?q=" className="mm-hero-cta" style={{ fontSize: "14px", padding: "10px 24px" }} prefetch={false}>
           See all deals
         </Link>
       </div>

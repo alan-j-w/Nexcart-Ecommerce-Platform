@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     "Shop millions of products from trusted vendors. Electronics, Fashion, Home & more with fast delivery and secure payments.",
 };
 
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,9 +33,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body>
-        <AuthProvider>
-          <ConditionalShell>{children}</ConditionalShell>
-        </AuthProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+          <AuthProvider>
+            <ConditionalShell>{children}</ConditionalShell>
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

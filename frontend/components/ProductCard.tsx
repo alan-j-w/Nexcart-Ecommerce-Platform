@@ -21,7 +21,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const originalPrice = Math.round(product.price * (1.2 + (product.name.length % 5) * 0.1));
 
   return (
-    <Link href={`/product/${product._id}`} className="mm-product-card" style={{ textDecoration: "none" }}>
+    <Link href={`/product/${product._id}`} className="mm-product-card" style={{ textDecoration: "none" }} prefetch={false}>
       {/* Product Image */}
       <div className="mm-product-image">
         {product.images && product.images.length > 0 ? (

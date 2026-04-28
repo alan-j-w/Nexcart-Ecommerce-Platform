@@ -61,7 +61,7 @@ export default function HeroBanner({ banners = [] }: { banners?: Banner[] }) {
           <div className="mm-hero-content">
             <h2 className="mm-hero-title">{slide.title}</h2>
             {slide.subtitle && <p className="mm-hero-subtitle">{slide.subtitle}</p>}
-            <Link href={slide.link} className="mm-hero-cta">
+            <Link href={slide.link} className="mm-hero-cta" prefetch={false}>
               {slide.cta}
             </Link>
           </div>

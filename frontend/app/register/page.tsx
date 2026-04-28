@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function RegisterPage() {
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -149,6 +150,28 @@ export default function RegisterPage() {
             {loading ? "Creating account..." : "Create your Nexcart account"}
           </button>
         </form>
+
+        <div style={{ margin: "20px 0", textAlign: "center", position: "relative" }}>
+          <hr style={{ border: "0", borderTop: "1px solid #E5E7EB" }} />
+          <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 10px", fontSize: "12px", color: "#6B7280" }}>OR</span>
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              if (credentialResponse.credential) {
+                googleLogin(credentialResponse.credential)
+                  .then(() => router.push("/"))
+                  .catch((err) => setError("Google signup failed."));
+              }
+            }}
+            onError={() => {
+              setError("Google signup failed.");
+            }}
+            useOneTap
+            use_fedcm_for_prompt={false}
+          />
+        </div>
 
         <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "16px" }}>
           By creating an account, you agree to Nexcart&apos;s Conditions of Use and Privacy Notice.
