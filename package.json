@@ -1,0 +1,9 @@
+{
+  "name": "nexcart-root",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "install-backend": "cd backend && npm install",
+    "build": "cd backend && npm install"
+  }
+}
