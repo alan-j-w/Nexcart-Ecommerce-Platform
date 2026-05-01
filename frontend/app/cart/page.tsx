@@ -17,7 +17,7 @@ export default function CartPage() {
   useEffect(() => {
     if (!authLoading) {
       if (!isAuthenticated) {
-        router.push("/login");+-
+        router.push("/login");
       } else {
         fetchCart();
       }

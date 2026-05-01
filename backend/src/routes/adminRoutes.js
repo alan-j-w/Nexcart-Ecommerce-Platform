@@ -12,6 +12,8 @@ const {
   updateOrderStatus,
 } = require("../controllers/adminController");
 const { protect, authorize } = require("../middleware/authMiddleware");
+const { getLastEmail } = require("../services/mailService");
+
 
 const router = express.Router();
 
@@ -32,5 +34,11 @@ router.put("/products/:id/toggle", protect, authorize("admin"), toggleProductAct
 // Orders
 router.get("/orders", protect, authorize("admin"), getAllOrders);
 router.put("/orders/:id/status", protect, authorize("admin"), updateOrderStatus);
+
+// Dev only: Get last sent email
+router.get("/dev/last-email", (req, res) => {
+  res.json(getLastEmail());
+});
+
 
 module.exports = router;

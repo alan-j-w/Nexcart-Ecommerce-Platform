@@ -78,8 +78,11 @@ exports.createProduct = async (req, res) => {
 // Get all products (public)
 exports.getProducts = async (req, res) => {
   try {
+    const { category: catParam, q } = req.query;
     const User = require("../models/User");
-    // Only hide products from suspended or deleted vendors
+    const Category = require("../models/Category");
+
+    // Only show products from active vendors
     const activeVendors = await User.find({ 
       role: "vendor", 
       isActive: { $ne: false },
@@ -88,7 +91,38 @@ exports.getProducts = async (req, res) => {
     
     const activeVendorIds = activeVendors.map(v => v._id);
     
-    const products = await Product.find({ vendor: { $in: activeVendorIds } }).populate("vendor", "name");
+    // Build query
+    let query = { vendor: { $in: activeVendorIds } };
+    
+    if (catParam) {
+      // 1. Try to find the official category name from the slug
+      const Category = require("../models/Category");
+      const foundCategory = await Category.findOne({ 
+        $or: [{ slug: catParam }, { name: catParam }] 
+      });
+      
+      const categoryName = foundCategory ? foundCategory.name : catParam;
+      
+      // 2. Create a "Smart Regex" that replaces dashes/spaces with a wildcard
+      // This allows "toys-games" to match "Toys & Games" or "Toys - Games"
+      const fuzzyPattern = categoryName
+        .replace(/[-_&]/g, ' ') // Replace common separators with space
+        .trim()
+        .split(/\s+/) // Split into words
+        .join('.*');   // Join with wildcard
+      
+      query.category = { $regex: fuzzyPattern, $options: "i" };
+    }
+    
+    if (q) {
+      // Simple search in name and description
+      query.$or = [
+        { name: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } }
+      ];
+    }
+    
+    const products = await Product.find(query).populate("vendor", "name");
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });

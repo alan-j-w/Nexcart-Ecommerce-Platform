@@ -22,6 +22,8 @@ export const metadata: Metadata = {
 
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
+import SplashScreen from "@/components/SplashScreen";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,6 +35,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
     >
       <body>
+        <SplashScreen />
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
           <AuthProvider>
             <ConditionalShell>{children}</ConditionalShell>

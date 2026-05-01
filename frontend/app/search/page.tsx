@@ -8,33 +8,27 @@ import { Product } from "@/lib/types";
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
+  const category = searchParams.get("category") || "";
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
-  }, [query]);
+  }, [query, category]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/products", {
+      // Pass filters directly to the API
+      const params = new URLSearchParams();
+      if (query) params.append("q", query);
+      if (category) params.append("category", category);
+
+      const res = await fetch(`http://localhost:5000/api/products?${params.toString()}`, {
         cache: "no-store",
       });
-      const all: Product[] = await res.json();
-
-      if (query) {
-        const q = query.toLowerCase();
-        const filtered = all.filter(
-          (p) =>
-            p.name.toLowerCase().includes(q) ||
-            p.description?.toLowerCase().includes(q) ||
-            p.category?.toLowerCase().includes(q)
-        );
-        setProducts(filtered);
-      } else {
-        setProducts(all);
-      }
+      const data: Product[] = await res.json();
+      setProducts(data);
     } catch {
       setProducts([]);
     } finally {
@@ -54,13 +48,13 @@ function SearchContent() {
     <div className="mm-section" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       {/* Results Header */}
       <div style={{ marginBottom: "16px" }}>
-        {query ? (
+        {(query || category) ? (
           <>
             <p style={{ fontSize: "14px", color: "#6B7280" }}>
               {products.length} results for
             </p>
-            <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#B45309" }}>
-              &quot;{query}&quot;
+            <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#6D28D9", textTransform: "capitalize" }}>
+              &quot;{query || category}&quot;
             </h1>
           </>
         ) : (

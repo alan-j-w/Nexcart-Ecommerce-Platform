@@ -22,7 +22,9 @@ const userSchema = new mongoose.Schema({
   isDeleted: {
     type: Boolean,
     default: false
-  }
+  },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

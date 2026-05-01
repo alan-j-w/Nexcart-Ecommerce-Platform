@@ -1,5 +1,6 @@
 const express = require("express");
-const { register, login, getMe, logout, googleLogin } = require("../controllers/authController");
+const { register, login, getMe, logout, googleLogin, forgotPassword, resetPassword } = require("../controllers/authController");
+
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -9,5 +10,8 @@ router.post("/login", login);
 router.post("/google-login", googleLogin);
 router.get("/me", protect, getMe);
 router.post("/logout", logout);
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password/:token", resetPassword);
+
 
 module.exports = router;

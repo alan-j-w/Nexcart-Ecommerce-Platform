@@ -65,7 +65,7 @@ export default function VendorOrders() {
         <div style={{ display: "flex", gap: "6px" }}>
           {STATUSES.map(s => (
             <button key={s} onClick={() => setStatusFilter(s)} style={{
-              padding: "5px 14px", borderRadius: "20px", border: "none", cursor: "pointer",
+              padding: "5px 14px", borderRadius: "20px", cursor: "pointer",
               fontSize: "12px", fontWeight: 600, textTransform: "capitalize",
               background: statusFilter === s ? "#6D28D9" : "#fff",
               color: statusFilter === s ? "#fff" : "#64748B",

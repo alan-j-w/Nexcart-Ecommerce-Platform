@@ -64,13 +64,19 @@ export default function LoginPage() {
             autoFocus
           />
 
-          <label htmlFor="password">Password</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label htmlFor="password" style={{ marginBottom: 0 }}>Password</label>
+            <Link href="/forgot-password" style={{ fontSize: "12px", color: "#6D28D9", fontWeight: 600 }}>
+              Forgot password?
+            </Link>
+          </div>
           <input
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            style={{ marginTop: "6px" }}
           />
 
           <button
@@ -100,8 +106,6 @@ export default function LoginPage() {
             onError={() => {
               setError("Google login failed.");
             }}
-            useOneTap
-            use_fedcm_for_prompt={false}
           />
         </div>
 

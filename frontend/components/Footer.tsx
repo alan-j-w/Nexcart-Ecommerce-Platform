@@ -47,10 +47,10 @@ export default function Footer() {
         <div className="mm-footer-col">
           <h4>Let Us Help You</h4>
           <ul>
-            <li>Your Account</li>
-            <li>Returns Centre</li>
-            <li>Recall and Safety</li>
-            <li>100% Purchase Protection</li>
+            <li><Link href="/account">Your Account</Link></li>
+            <li><Link href="/refund-policy">Returns & Refund Policy</Link></li>
+            <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+            <li><Link href="/terms-and-conditions">Terms & Conditions</Link></li>
             <li>Help</li>
           </ul>
         </div>

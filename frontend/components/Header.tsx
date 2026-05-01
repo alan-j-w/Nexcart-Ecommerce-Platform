@@ -10,6 +10,7 @@ export default function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchCategory, setSearchCategory] = useState("All");
   const [cartCount, setCartCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -49,9 +50,14 @@ export default function Header() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-    }
+    const query = searchQuery.trim();
+    const cat = searchCategory === "All" ? "" : searchCategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    
+    const params = new URLSearchParams();
+    if (query) params.append("q", query);
+    if (cat) params.append("category", cat);
+    
+    router.push(`/search?${params.toString()}`);
   };
 
   return (
@@ -75,13 +81,20 @@ export default function Header() {
 
         {/* Search Bar */}
         <form className="mm-search" onSubmit={handleSearch}>
-          <select className="mm-search-category" id="search-category">
+          <select 
+            className="mm-search-category" 
+            id="search-category"
+            value={searchCategory}
+            onChange={(e) => setSearchCategory(e.target.value)}
+          >
             <option>All</option>
             <option>Electronics</option>
             <option>Fashion</option>
-            <option>Home</option>
+            <option>Home & Kitchen</option>
             <option>Books</option>
             <option>Sports</option>
+            <option>Beauty</option>
+            <option>Toys & Games</option>
           </select>
           <input
             className="mm-search-input"
@@ -183,13 +196,13 @@ export default function Header() {
       {/* Sub-header / Category Navigation */}
       <nav className="mm-subheader">
         <Link href="/" className="mm-subheader-item" prefetch={false}>☰ All</Link>
-        <Link href="/search?q=electronics" className="mm-subheader-item" prefetch={false}>Electronics</Link>
-        <Link href="/search?q=fashion" className="mm-subheader-item" prefetch={false}>Fashion</Link>
-        <Link href="/search?q=home" className="mm-subheader-item" prefetch={false}>Home & Kitchen</Link>
-        <Link href="/search?q=books" className="mm-subheader-item" prefetch={false}>Books</Link>
-        <Link href="/search?q=sports" className="mm-subheader-item" prefetch={false}>Sports</Link>
-        <Link href="/search?q=beauty" className="mm-subheader-item" prefetch={false}>Beauty</Link>
-        <Link href="/search?q=toys" className="mm-subheader-item" prefetch={false}>Toys & Games</Link>
+        <Link href="/search?category=electronics" className="mm-subheader-item" prefetch={false}>Electronics</Link>
+        <Link href="/search?category=fashion" className="mm-subheader-item" prefetch={false}>Fashion</Link>
+        <Link href="/search?category=home-kitchen" className="mm-subheader-item" prefetch={false}>Home & Kitchen</Link>
+        <Link href="/search?category=books" className="mm-subheader-item" prefetch={false}>Books</Link>
+        <Link href="/search?category=sports" className="mm-subheader-item" prefetch={false}>Sports</Link>
+        <Link href="/search?category=beauty" className="mm-subheader-item" prefetch={false}>Beauty</Link>
+        <Link href="/search?category=toys-games" className="mm-subheader-item" prefetch={false}>Toys & Games</Link>
         <Link href="/vendor/dashboard" className="mm-subheader-item" prefetch={false}>Sell on Nexcart</Link>
         <span className="mm-subheader-item" style={{ color: "#FBBF24" }}>Today&apos;s Deals</span>
       </nav>
