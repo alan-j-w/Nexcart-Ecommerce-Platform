@@ -15,14 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nexcart — Everything You Need, Delivered",
-  description:
-    "Shop millions of products from trusted vendors. Electronics, Fashion, Home & more with fast delivery and secure payments.",
+  title: "Nexcart | Multi-Vendor E-Commerce",
+  description: "Your one-stop shop for everything",
 };
-
-import { GoogleOAuthProvider } from "@react-oauth/google";
-
-import SplashScreen from "@/components/SplashScreen";
 
 export default function RootLayout({
   children,
@@ -30,17 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
-      <body>
-        <SplashScreen />
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
-          <AuthProvider>
-            <ConditionalShell>{children}</ConditionalShell>
-          </AuthProvider>
-        </GoogleOAuthProvider>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>
+          <ConditionalShell>{children}</ConditionalShell>
+        </AuthProvider>
       </body>
     </html>
   );
