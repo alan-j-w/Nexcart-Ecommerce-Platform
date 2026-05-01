@@ -14,6 +14,9 @@ connectDB();
 
 const app = express();
 
+// Trust proxy for rate limiting (Railway requirement)
+app.set("trust proxy", 1);
+
 // Middleware
 app.use(helmet()); // Set secure HTTP headers
 app.use(express.json({ limit: "10mb" }));
