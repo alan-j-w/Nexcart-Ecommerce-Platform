@@ -29,16 +29,19 @@ app.use("/api/auth", limiter); // Apply specifically to auth routes
 
 // Restricted CORS
 const allowedOrigins = [
-  process.env.FRONTEND_URL, // Your Vercel URL (set this in Railway Env)
+  process.env.FRONTEND_URL,
   "http://localhost:3000",
-  "http://localhost:3001"
-].filter(Boolean); // Remove null/undefined
+  "http://localhost:3001",
+  "https://nexcart-ecommerce-platform.vercel.app" // Explicitly adding your Vercel URL
+].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Allow if it's in our list OR if it's a Vercel preview/deployment URL
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
+      console.log("CORS Blocked Origin:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
