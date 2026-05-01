@@ -16,35 +16,35 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // CRITICAL: This ensures that NOTHING inside this component
-  // executes until AFTER the component has mounted in the browser.
-  // This prevents Vercel's build-time SSR from triggering fetches.
   useEffect(() => {
     setMounted(true);
     
-    const fetchData = async () => {
-      try {
-        const [prodRes, bannerRes, catRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/products`, { cache: 'no-store' }),
-          fetch(`${API_BASE_URL}/banners/active`, { cache: 'no-store' }),
-          fetch(`${API_BASE_URL}/categories`, { cache: 'no-store' }),
-        ]);
+    // Only fetch if we are mounted and have a valid URL
+    if (API_BASE_URL) {
+      const fetchData = async () => {
+        try {
+          const [prodRes, bannerRes, catRes] = await Promise.all([
+            fetch(`${API_BASE_URL}/products`, { cache: 'no-store' }),
+            fetch(`${API_BASE_URL}/banners/active`, { cache: 'no-store' }),
+            fetch(`${API_BASE_URL}/categories`, { cache: 'no-store' }),
+          ]);
 
-        if (prodRes.ok) setProducts(await prodRes.json());
-        if (bannerRes.ok) setBanners(await bannerRes.json());
-        if (catRes.ok) setCategories(await catRes.json());
-      } catch (err) {
-        console.error("Build-Safe Fetch Error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+          if (prodRes.ok) setProducts(await prodRes.json());
+          if (bannerRes.ok) setBanners(await bannerRes.json());
+          if (catRes.ok) setCategories(await catRes.json());
+        } catch (err) {
+          console.error("Client-Side Fetch Error:", err);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    fetchData();
+      fetchData();
+    }
   }, []);
 
-  // Return a shell/loading state during SSR/Build
-  if (!mounted) return <div className="mm-loading-shell" />;
+  // Prevent SSR/Build rendering completely
+  if (!mounted) return null;
 
   if (loading) {
     return (
@@ -95,7 +95,6 @@ export default function Home() {
         </div>
       </section>
       
-      {/* Empty State */}
       {products.length === 0 && (
         <div className="mm-empty">
           <h3>No products yet</h3>
