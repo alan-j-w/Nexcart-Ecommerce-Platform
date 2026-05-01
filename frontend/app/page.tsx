@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
 import { Product, Banner, Category } from "@/lib/types";
