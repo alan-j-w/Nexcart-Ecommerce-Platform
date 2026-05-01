@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import Link from "next/link";
 
-export default function DevEmailInbox() {
+export default function DevEmails() {
+  const API = createAPI();
   const [email, setEmail] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import { Category } from "@/lib/types";
 import Toast from "@/components/Toast";
 
@@ -9,6 +9,7 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 
 export default function AdminCategories() {
+  const API = createAPI();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 

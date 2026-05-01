@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 const STATUSES = ["pending", "paid", "shipped", "delivered"];
 
@@ -13,6 +13,7 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
 };
 
 export default function AdminOrders() {
+  const API = createAPI();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

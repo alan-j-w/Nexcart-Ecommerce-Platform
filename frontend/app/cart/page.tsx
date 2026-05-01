@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import { useAuth } from "@/lib/AuthContext";
 import { Cart, CartItem } from "@/lib/types";
 
 export default function CartPage() {
+  const API = createAPI();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
   const [cart, setCart] = useState<Cart | null>(null);

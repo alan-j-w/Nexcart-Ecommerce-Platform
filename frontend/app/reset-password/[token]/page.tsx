@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function ResetPassword() {
+  const API = createAPI();
+  const { token } = useParams();
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   
   const params = useParams();
-  const router = useRouter();
   const token = params.token;
 
   const handleSubmit = async (e: React.FormEvent) => {

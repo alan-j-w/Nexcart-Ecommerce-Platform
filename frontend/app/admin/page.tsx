@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 interface Stats {
   totalVendors: number;
@@ -40,7 +40,9 @@ function StatCard({ label, value, icon, color, sub }: { label: string; value: st
   );
 }
 
-export default function AdminOverview() {
+export default function AdminDashboard() {
+  const API = createAPI();
+  const { user, loading: authLoading } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 

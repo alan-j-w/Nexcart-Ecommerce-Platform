@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
   pending:   { bg: "#FEF3C7", color: "#92400E" },
@@ -11,6 +11,7 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
 };
 
 export default function VendorOrders() {
+  const API = createAPI();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");

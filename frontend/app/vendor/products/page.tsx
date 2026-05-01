@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 const MAX_SIZE_MB = 5;
 const CATEGORIES = ["Electronics", "Fashion", "Home & Kitchen", "Books", "Sports", "Beauty", "Toys & Games", "Other"];
@@ -117,6 +117,7 @@ function ProductForm({ initial, onSave, onCancel, saving }: {
 
 // ── Main page ────────────────────────────────────────────────────────
 export default function VendorProducts() {
+  const API = createAPI();
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

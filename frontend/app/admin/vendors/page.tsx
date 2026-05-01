@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 interface Vendor {
   _id: string;
@@ -22,6 +22,7 @@ const S = {
 };
 
 export default function AdminVendors() {
+  const API = createAPI();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [past, setPast] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);

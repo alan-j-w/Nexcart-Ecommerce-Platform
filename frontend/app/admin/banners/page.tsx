@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import { Banner } from "@/lib/types";
 import Toast from "@/components/Toast";
 
@@ -9,7 +9,8 @@ import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 
 export default function AdminBanners() {
-  const [banners, setBanners] = useState<Banner[]>([]);
+  const API = createAPI();
+  const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Form State

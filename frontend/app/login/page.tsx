@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import { GoogleLogin } from "@react-oauth/google";
 
 export default function LoginPage() {
+  const API = createAPI();
   const { login, googleLogin } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");

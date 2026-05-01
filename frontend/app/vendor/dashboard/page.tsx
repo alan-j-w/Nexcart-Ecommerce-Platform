@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import { useAuth } from "@/lib/AuthContext";
 
 interface Stats {
@@ -22,6 +22,7 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
 };
 
 export default function VendorDashboard() {
+  const API = createAPI();
   const { user } = useAuth();
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 import Link from "next/link";
 
 export default function ForgotPassword() {
+  const API = createAPI();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);

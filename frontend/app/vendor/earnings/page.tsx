@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 export default function VendorEarnings() {
+  const API = createAPI();
   const [data, setData] = useState<{ totalEarnings: number; totalOrders: number; topProducts: any[] } | null>(null);
   const [allOrders, setAllOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

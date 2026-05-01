@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import API from "@/lib/api";
+import createAPI from "@/lib/api";
 
 interface Product {
   _id: string;
@@ -17,6 +17,7 @@ interface Product {
 }
 
 export default function AdminProducts() {
+  const API = createAPI();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
