@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
@@ -30,8 +31,11 @@ export default async function Home() {
       categories = await catRes.json();
     }
   } catch (err) {
-    error =
-      err instanceof Error ? err.message : "Failed to connect to backend";
+    // Let Next.js handle dynamic server usage errors during build
+    if (err instanceof Error && err.message.includes('DYNAMIC_SERVER_USAGE')) {
+      throw err;
+    }
+    error = err instanceof Error ? err.message : "Failed to connect to backend";
     console.error("Failed to fetch data:", err);
   }
 
