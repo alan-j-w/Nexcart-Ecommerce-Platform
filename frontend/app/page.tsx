@@ -1,42 +1,48 @@
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+"use client";
 
+import { useEffect, useState } from "react";
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
 import { Product, Banner, Category } from "@/lib/types";
 import Link from "next/link";
-import Toast from "@/components/Toast";
 import { API_BASE_URL } from "@/lib/constants";
 
-export default async function Home() {
-  let products: Product[] = [];
-  let banners: Banner[] = [];
-  let categories: Category[] = [];
-  let error: string | null = null;
+export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  try {
-    const [prodRes, bannerRes, catRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/products`, { cache: "no-store" }),
-      fetch(`${API_BASE_URL}/banners/active`, { cache: "no-store" }),
-      fetch(`${API_BASE_URL}/categories`, { cache: "no-store" })
-    ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [prodRes, bannerRes, catRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/products`),
+          fetch(`${API_BASE_URL}/banners/active`),
+          fetch(`${API_BASE_URL}/categories`),
+        ]);
 
-    if (!prodRes.ok) throw new Error(`Backend responded with status ${prodRes.status}`);
+        if (prodRes.ok) setProducts(await prodRes.json());
+        if (bannerRes.ok) setBanners(await bannerRes.json());
+        if (catRes.ok) setCategories(await catRes.json());
+      } catch (err) {
+        setError("Unable to connect to the server. Please try again later.");
+        console.error("Failed to fetch data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    products = await prodRes.json();
-    if (bannerRes.ok) {
-      banners = await bannerRes.json();
-    }
-    if (catRes.ok) {
-      categories = await catRes.json();
-    }
-  } catch (err) {
-    // Let Next.js handle dynamic server usage errors during build
-    if (err instanceof Error && err.message.includes('DYNAMIC_SERVER_USAGE')) {
-      throw err;
-    }
-    error = err instanceof Error ? err.message : "Failed to connect to backend";
-    console.error("Failed to fetch data:", err);
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="mm-loading">
+        <div className="mm-spinner" />
+      </div>
+    );
   }
 
   return (
@@ -44,7 +50,7 @@ export default async function Home() {
       {/* Hero Banner */}
       <HeroBanner banners={banners} />
 
-      {/* Category Cards — overlapping banner */}
+      {/* Category Cards */}
       <div className="mm-categories-grid">
         {categories.map((cat) => (
           <Link href={`/search?category=${cat.slug}`} key={cat._id} style={{ textDecoration: "none" }} prefetch={false}>
@@ -59,16 +65,18 @@ export default async function Home() {
             </div>
           </Link>
         ))}
-        {categories.length === 0 && (
+        {categories.length === 0 && !loading && (
           <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "#6B7280" }}>
-            No categories available. Add some in the Admin Panel.
+            No categories available.
           </p>
         )}
       </div>
 
       {/* Error State */}
       {error && (
-        <Toast message="Unable to connect to the server at this time. Please try again later." type="error" />
+        <div style={{ textAlign: "center", padding: "20px", color: "#DC2626" }}>
+          {error}
+        </div>
       )}
 
       {/* Deals Banner */}
@@ -92,7 +100,6 @@ export default async function Home() {
       {/* Products Section */}
       {!error && products.length > 0 && (
         <>
-          {/* Horizontal Scroll - Featured */}
           <section className="mm-section">
             <h2 className="mm-section-title">Featured Products</h2>
             <div className="mm-products-scroll">
@@ -102,7 +109,6 @@ export default async function Home() {
             </div>
           </section>
 
-          {/* Product Grid - All Products */}
           <section className="mm-section">
             <h2 className="mm-section-title">All Products</h2>
             <div className="mm-product-grid">
