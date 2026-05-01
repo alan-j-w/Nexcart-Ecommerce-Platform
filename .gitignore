@@ -1,11 +1,11 @@
 # Dependencies
 node_modules/
-/marketplace-backend/node_modules/
-/marketplace-frontend/node_modules/
+backend/node_modules/
+frontend/node_modules/
 
 # Next.js build
-/marketplace-frontend/.next/
-/marketplace-frontend/out/
+frontend/.next/
+frontend/out/
 
 # Environment files
 .env
@@ -13,8 +13,9 @@ node_modules/
 .env.development.local
 .env.test.local
 .env.production.local
-/marketplace-backend/.env
-/marketplace-frontend/.env
+backend/.env
+frontend/.env
+frontend/.env.local
 
 # MacOS files
 .DS_Store
@@ -30,13 +31,13 @@ yarn-error.log*
 .idea/
 
 # Testing
-/marketplace-frontend/coverage/
+frontend/coverage/
 
 # Production
-/marketplace-backend/dist/
-/marketplace-frontend/build/
+backend/dist/
+frontend/build/
 
 # Miscellaneous
 *.pem
 *.tsbuildinfo
-/marketplace-frontend/next-env.d.ts
+frontend/next-env.d.ts

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "@/lib/api";
 import Link from "next/link";
 
 export default function DevEmailInbox() {
@@ -11,7 +11,7 @@ export default function DevEmailInbox() {
   const fetchEmail = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/admin/dev/last-email");
+      const res = await API.get("/admin/dev/last-email");
       setEmail(res.data);
     } catch (err) {
       console.error("Failed to fetch dev email:", err);

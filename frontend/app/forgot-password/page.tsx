@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
+import API from "@/lib/api";
 import Link from "next/link";
 
 export default function ForgotPassword() {
@@ -15,7 +15,7 @@ export default function ForgotPassword() {
     setMessage(null);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/forgot-password", { email });
+      await API.post("/auth/forgot-password", { email });
       setMessage({ 
         type: "success", 
         text: "Check your Dev Emails dashboard to see the reset link!" 

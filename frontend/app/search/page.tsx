@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/lib/types";
+import { API_BASE_URL } from "@/lib/constants";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -24,7 +25,7 @@ function SearchContent() {
       if (query) params.append("q", query);
       if (category) params.append("category", category);
 
-      const res = await fetch(`http://localhost:5000/api/products?${params.toString()}`, {
+      const res = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
         cache: "no-store",
       });
       const data: Product[] = await res.json();

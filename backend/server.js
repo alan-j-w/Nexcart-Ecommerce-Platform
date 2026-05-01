@@ -29,9 +29,10 @@ app.use("/api/auth", limiter); // Apply specifically to auth routes
 
 // Restricted CORS
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:3000",
-  "http://localhost:3001" // Keep local dev accessible
-];
+  process.env.FRONTEND_URL, // Your Vercel URL (set this in Railway Env)
+  "http://localhost:3000",
+  "http://localhost:3001"
+].filter(Boolean); // Remove null/undefined
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -43,6 +44,11 @@ app.use(cors({
   },
   credentials: true
 }));
+
+// Health Route (Vital for Deployment)
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "UP", message: "Nexcart API is healthy" });
+});
 
 
 // Routes

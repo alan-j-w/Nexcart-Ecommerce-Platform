@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Product } from "@/lib/types";
 import { useAuth } from "@/lib/AuthContext";
 import API from "@/lib/api";
+import { API_BASE_URL } from "@/lib/constants";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -22,7 +23,7 @@ export default function ProductDetailPage() {
 
   const fetchProduct = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/products`, {
+      const res = await fetch(`${API_BASE_URL}/products`, {
         cache: "no-store",
       });
       const products: Product[] = await res.json();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
+import API from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -26,7 +26,7 @@ export default function ResetPassword() {
     setMessage(null);
 
     try {
-      await axios.put(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
+      await API.put(`/auth/reset-password/${token}`, { password });
       setMessage({ type: "success", text: "Password reset successful! Redirecting to login..." });
       
       setTimeout(() => {

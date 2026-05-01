@@ -3,6 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import { Product, Banner, Category } from "@/lib/types";
 import Link from "next/link";
 import Toast from "@/components/Toast";
+import { API_BASE_URL } from "@/lib/constants";
 
 export default async function Home() {
   let products: Product[] = [];
@@ -12,9 +13,9 @@ export default async function Home() {
 
   try {
     const [prodRes, bannerRes, catRes] = await Promise.all([
-      fetch("http://localhost:5000/api/products", { cache: "no-store" }),
-      fetch("http://localhost:5000/api/banners/active", { cache: "no-store" }),
-      fetch("http://localhost:5000/api/categories", { cache: "no-store" })
+      fetch(`${API_BASE_URL}/products`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/banners/active`, { cache: "no-store" }),
+      fetch(`${API_BASE_URL}/categories`, { cache: "no-store" })
     ]);
 
     if (!prodRes.ok) throw new Error(`Backend responded with status ${prodRes.status}`);
