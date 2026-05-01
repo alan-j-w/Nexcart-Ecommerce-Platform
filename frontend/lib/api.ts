@@ -1,23 +1,28 @@
-import axios from "axios";
+import { API_BASE_URL } from "./constants";
 
-// Create API ONLY when called (not at import time)
 const createAPI = () => {
-  const baseURL =
-    typeof window !== "undefined"
-      ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api")
-      : "";
+  if (typeof window === "undefined") {
+    // Return a dummy object for server-side to prevent crashes
+    return {
+      get: () => Promise.resolve({ data: [] }),
+      post: () => Promise.resolve({ data: {} }),
+      put: () => Promise.resolve({ data: {} }),
+      delete: () => Promise.resolve({ data: {} }),
+      interceptors: { request: { use: () => {} }, response: { use: () => {} } }
+    };
+  }
 
+  // Only load axios in the browser
+  const axios = require("axios");
+  
   const instance = axios.create({
-    baseURL,
+    baseURL: API_BASE_URL,
   });
 
-  // Attach token safely
-  instance.interceptors.request.use((config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+  instance.interceptors.request.use((config: any) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   });
@@ -25,5 +30,4 @@ const createAPI = () => {
   return instance;
 };
 
-// Export the function instead of the instance
 export default createAPI;
