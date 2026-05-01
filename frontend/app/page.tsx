@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
