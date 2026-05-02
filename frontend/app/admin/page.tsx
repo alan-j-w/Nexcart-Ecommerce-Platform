@@ -49,7 +49,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     API.get("/admin/stats")
-      .then(res => setStats(res.data))
+      .then((res: any) => setStats(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
