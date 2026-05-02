@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/AuthContext";
 import API from "@/lib/api";
 
 export default function OrdersPage() {
+  const api = API();
   const { isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
   const [orders, setOrders] = useState<any[]>([]);
@@ -25,7 +26,7 @@ export default function OrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await API.get("/orders");
+      const res = await api.get("/orders");
       setOrders(res.data);
     } catch (err) {
       console.error(err);
