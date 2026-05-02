@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import createAPI from "@/lib/api";
+import { useAuth } from "@/lib/AuthContext";
 
 interface Stats {
   totalVendors: number;
