@@ -1,4 +1,4 @@
-const razorpay = require("../config/razorpay");
+const getRazorpayInstance = require("../config/razorpay");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
@@ -6,6 +6,10 @@ const crypto = require("crypto");
 
 // Create Order (Razorpay)
 exports.createRazorpayOrder = async (req, res) => {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    return res.status(503).json({ message: "Payment service is currently unavailable" });
+  }
+
   try {
     const cart = await Cart.findOne({ user: req.user.id }).populate("items.product");
 
@@ -35,7 +39,7 @@ exports.createRazorpayOrder = async (req, res) => {
       receipt: `receipt_${Date.now()}`
     };
 
-    console.log("[Payment] Creating Razorpay order:", options);
+    const razorpay = getRazorpayInstance();
     const order = await razorpay.orders.create(options);
 
     res.json({
@@ -45,15 +49,17 @@ exports.createRazorpayOrder = async (req, res) => {
     });
 
   } catch (err) {
-    // Razorpay SDK errors are objects, not plain Error instances
-    console.error("[Payment] Razorpay create-order error:", JSON.stringify(err, null, 2));
-    const message = err?.error?.description || err?.message || "Failed to create payment order";
-    res.status(500).json({ error: message });
+    console.error("[Payment] Razorpay create-order error:", err);
+    res.status(500).json({ error: "Failed to create payment order" });
   }
 };
 
 // Verify Payment & Final Order Fulfillment
 exports.verifyPayment = async (req, res) => {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    return res.status(503).json({ message: "Payment service is currently unavailable" });
+  }
+
   try {
     const {
       razorpay_order_id,
@@ -132,6 +138,6 @@ exports.verifyPayment = async (req, res) => {
 
   } catch (err) {
     console.error("[Payment] verifyPayment error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Payment verification failed" });
   }
 };
