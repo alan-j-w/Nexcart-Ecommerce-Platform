@@ -175,7 +175,10 @@ export default function VendorProducts() {
     }
   };
 
-  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || (p.category || "").toLowerCase().includes(search.toLowerCase()));
+  const filtered = products.filter(p => 
+    (p.name?.toLowerCase() || "").includes(search.toLowerCase()) || 
+    (p.category?.toLowerCase() || "").includes(search.toLowerCase())
+  );
 
   return (
     <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
