@@ -27,16 +27,17 @@ exports.register = async (req, res) => {
   }
 };
 
-const { OAuth2Client } = require("google-auth-library");
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-// Google Login
+// Google Login POST handler (called by frontend)
 exports.googleLogin = async (req, res) => {
+  const { OAuth2Client } = require("google-auth-library");
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  
   try {
-    const { idToken } = req.body;
+    const { idToken, credential } = req.body;
+    const tokenToVerify = idToken || credential;
 
-    if (!idToken) {
-      return res.status(400).json({ error: "idToken is required" });
+    if (!tokenToVerify) {
+      return res.status(400).json({ error: "Token is required (idToken or credential)" });
     }
 
     if (!process.env.GOOGLE_CLIENT_ID) {
@@ -47,7 +48,7 @@ exports.googleLogin = async (req, res) => {
     let ticket;
     try {
       ticket = await client.verifyIdToken({
-        idToken,
+        idToken: tokenToVerify,
         audience: process.env.GOOGLE_CLIENT_ID,
       });
     } catch (verifyError) {
@@ -94,6 +95,20 @@ exports.googleLogin = async (req, res) => {
     console.error("Google Login Controller Error:", err);
     res.status(500).json({ error: "Internal server error during Google login" });
   }
+};
+
+// Google Login GET handler (for testing/browser check)
+exports.googleLoginCheck = (req, res) => {
+  res.json({ 
+    status: "Ready", 
+    message: "Google Login endpoint is active. Use POST to submit tokens.",
+    clientIdSet: !!process.env.GOOGLE_CLIENT_ID
+  });
+};
+
+// Google Callback handler (placeholder for redirect flow)
+exports.googleCallback = (req, res) => {
+  res.send("Google callback received. If you see this, you might be using the redirect flow instead of the popup flow. Please check your frontend configuration.");
 };
 
 // Login

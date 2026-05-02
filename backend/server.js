@@ -44,8 +44,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow if it's in our list OR if it's a Vercel deployment URL
-    if (!origin || allowedOrigins.includes(origin) || origin.includes("vercel.app")) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.log("CORS Blocked Origin:", origin);
@@ -75,6 +74,18 @@ app.get("/", (req, res) => {
   res.send("Multi-Vendor E-Commerce API running...");
 });
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Unhandled Error:", err.stack);
+  res.status(500).json({
+    error: "Internal Server Error",
+    message: process.env.NODE_ENV === "production" ? "Something went wrong" : err.message
+  });
+});
+
 // Server Initialization
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 8080; // Defaulting to 8080 as per user suggestion
+app.listen(PORT, () => {
+  console.log(`Nexcart Backend: Running on port ${PORT}`);
+  console.log(`Allowed Origins: ${allowedOrigins.join(", ")}`);
+});
