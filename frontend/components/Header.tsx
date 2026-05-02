@@ -29,7 +29,7 @@ export default function Header() {
 
   const fetchCartCount = useCallback(() => {
     if (isAuthenticated) {
-      API.get("/cart").then(res => {
+      API.get("/cart").then((res: any) => {
         if (res.data && res.data.items) {
           const count = res.data.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
           setCartCount(count);

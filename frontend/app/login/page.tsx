@@ -101,7 +101,7 @@ export default function LoginPage() {
               if (credentialResponse.credential) {
                 googleLogin(credentialResponse.credential)
                   .then(() => router.push("/"))
-                  .catch((err) => setError("Google login failed."));
+                  .catch((err: any) => setError("Google login failed."));
               }
             }}
             onError={() => {

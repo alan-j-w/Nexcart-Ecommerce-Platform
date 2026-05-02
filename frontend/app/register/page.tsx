@@ -162,7 +162,7 @@ export default function RegisterPage() {
               if (credentialResponse.credential) {
                 googleLogin(credentialResponse.credential)
                   .then(() => router.push("/"))
-                  .catch((err) => setError("Google signup failed."));
+                  .catch((err: any) => setError("Google signup failed."));
               }
             }}
             onError={() => {
