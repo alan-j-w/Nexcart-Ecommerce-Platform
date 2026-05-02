@@ -20,7 +20,7 @@ export default function VendorOrders() {
 
   useEffect(() => {
     API.get("/orders/vendor")
-      .then(res => setOrders(res.data))
+      .then((res: any) => setOrders(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
