@@ -186,5 +186,3 @@ MIT License
 ## 👨‍💻 Author
 
 **Alan Joy Wilson**
-* add **API documentation section**
-* or make it **portfolio-level (recruiter-ready)** 🔥
