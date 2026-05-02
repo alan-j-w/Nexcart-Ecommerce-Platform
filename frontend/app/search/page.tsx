@@ -1,4 +1,3 @@
-
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/lib/types";
 import { API_BASE_URL } from "@/lib/constants";
@@ -9,18 +8,19 @@ export const metadata = {
 };
 
 async function getProducts(query: string, category: string) {
-  if (!API_BASE_URL) return [];
-  try {
-    const params = new URLSearchParams();
-    if (query) params.append("q", query);
-    if (category) params.append("category", category);
+  if (!API_BASE_URL) return { products: [], status: "error" };
+  
+  const params = new URLSearchParams();
+  if (query) params.append("q", query);
+  if (category) params.append("category", category);
 
-    // Search results are dynamic but can be cached for a very short time
-    return await safeFetch(`${API_BASE_URL}/products?${params.toString()}`, { next: { revalidate: 10 } });
-  } catch (err) {
-    console.error("Error fetching search products:", err);
-    return [];
-  }
+  const data: Product[] | null = await safeFetch(`${API_BASE_URL}/products?${params.toString()}`, { 
+    next: { revalidate: 10 } 
+  }).catch(() => null);
+
+  if (!data) return { products: [], status: "error" };
+  
+  return { products: data, status: data.length > 0 ? "success" : "empty" };
 }
 
 export default async function SearchPage({ 
@@ -29,7 +29,7 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string, category?: string }> 
 }) {
   const { q: query = "", category = "" } = await searchParams;
-  const products = await getProducts(query, category);
+  const { products, status } = await getProducts(query, category);
 
   return (
     <div className="mm-section" style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -48,6 +48,12 @@ export default async function SearchPage({
           <h1 style={{ fontSize: "22px", fontWeight: 700 }}>All Products</h1>
         )}
       </div>
+
+      {status === "error" && (
+        <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "16px" }}>
+          ⚠️ We&apos;re having trouble reaching our catalog. Please try refreshing.
+        </p>
+      )}
 
       {/* Sort bar */}
       <div
@@ -77,7 +83,7 @@ export default async function SearchPage({
             <ProductCard key={p._id} product={p} />
           ))}
         </div>
-      ) : (
+      ) : status !== "error" && (
         <div className="mm-empty" style={{ background: "#fff", borderRadius: "8px" }}>
           <div className="mm-empty-icon">🔍</div>
           <h3 style={{ fontSize: "18px", fontWeight: 700 }}>No results found</h3>

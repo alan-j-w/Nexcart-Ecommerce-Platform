@@ -1,4 +1,3 @@
-
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
 import { Product, Banner, Category } from "@/lib/types";
@@ -12,28 +11,37 @@ export const metadata = {
 };
 
 async function getHomeData() {
-  if (!API_BASE_URL) return { products: [], banners: [], categories: [] };
+  if (!API_BASE_URL) return { products: [], banners: [], categories: [], status: "error" };
 
-  try {
-    // For homepage data, we use 60s revalidation for high performance
-    const fetchOptions = { next: { revalidate: 60 } };
-    
-    const [products, banners, categories] = await Promise.all([
-      safeFetch(`${API_BASE_URL}/products`, fetchOptions),
-      safeFetch(`${API_BASE_URL}/banners/active`, fetchOptions),
-      safeFetch(`${API_BASE_URL}/categories`, fetchOptions),
-    ]);
+  // For homepage data, we use 60s revalidation for high performance
+  const fetchOptions = { next: { revalidate: 60 } };
+  
+  // We use .catch(() => null) to avoid swallowing Next.js build signals in a try/catch
+  const [products, banners, categories] = await Promise.all([
+    safeFetch(`${API_BASE_URL}/products`, fetchOptions).catch(() => null),
+    safeFetch(`${API_BASE_URL}/banners/active`, fetchOptions).catch(() => null),
+    safeFetch(`${API_BASE_URL}/categories`, fetchOptions).catch(() => null),
+  ]);
 
-    return { products, banners, categories };
-  } catch (err) {
-    console.error("Home Data Fetch Error:", err);
-    // Return empty arrays to allow page to render even if some data fails
-    return { products: [], banners: [], categories: [] };
+  if (!products || !banners || !categories) {
+    return { 
+      products: products || [], 
+      banners: banners || [], 
+      categories: categories || [], 
+      status: "error" 
+    };
   }
+
+  return { 
+    products, 
+    banners, 
+    categories, 
+    status: products.length > 0 ? "success" : "empty" 
+  };
 }
 
 export default async function Home() {
-  const { products, banners, categories } = await getHomeData();
+  const { products, banners, categories, status } = await getHomeData();
 
   return (
     <>
@@ -69,6 +77,11 @@ export default async function Home() {
 
       <section className="mm-section">
         <h2 className="mm-section-title">Featured Products</h2>
+        {status === "error" && (
+          <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "10px" }}>
+            ⚠️ Service temporarily unavailable. Showing cached/partial results.
+          </p>
+        )}
         <div className="mm-products-scroll">
           {products.map((p: Product) => (
             <ProductCard key={p._id} product={p} />
@@ -76,7 +89,7 @@ export default async function Home() {
         </div>
       </section>
       
-      {products.length === 0 && (
+      {status === "empty" && (
         <div className="mm-empty">
           <h3>No products yet</h3>
           <Link href="/register" className="mm-btn-primary">Start Selling</Link>
