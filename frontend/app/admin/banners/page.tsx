@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect, useState } from "react";
 import createAPI from "@/lib/api";
 import { Banner } from "@/lib/types";

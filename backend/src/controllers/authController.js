@@ -35,13 +35,32 @@ exports.googleLogin = async (req, res) => {
   try {
     const { idToken } = req.body;
 
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    if (!idToken) {
+      return res.status(400).json({ error: "idToken is required" });
+    }
+
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      console.error("GOOGLE_CLIENT_ID is missing in environment variables");
+      return res.status(500).json({ error: "Server configuration error: missing Google Client ID" });
+    }
+
+    let ticket;
+    try {
+      ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+    } catch (verifyError) {
+      console.error("Google Token Verification Failed:", verifyError.message);
+      return res.status(400).json({ error: "Invalid Google token: " + verifyError.message });
+    }
 
     const payload = ticket.getPayload();
-    const { email, name, sub: googleId } = payload;
+    if (!payload) {
+      return res.status(400).json({ error: "Invalid Google token payload" });
+    }
+
+    const { email, name } = payload;
 
     let user = await User.findOne({ email });
 
@@ -54,6 +73,7 @@ exports.googleLogin = async (req, res) => {
         role: "customer",
         isApproved: true,
       });
+      console.log(`New user created via Google Login: ${email}`);
     }
 
     const token = jwt.sign(
@@ -71,7 +91,8 @@ exports.googleLogin = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Google Login Controller Error:", err);
+    res.status(500).json({ error: "Internal server error during Google login" });
   }
 };
 
