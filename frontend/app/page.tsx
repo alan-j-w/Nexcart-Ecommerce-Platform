@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import HeroBanner from "@/components/HeroBanner";
 import ProductCard from "@/components/ProductCard";
