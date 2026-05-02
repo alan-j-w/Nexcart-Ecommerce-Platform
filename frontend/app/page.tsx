@@ -3,7 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import { Product, Banner, Category } from "@/lib/types";
 import Link from "next/link";
 import { API_BASE_URL } from "@/lib/constants";
-import { safeFetch } from "@/lib/fetch-utils";
+import { safeFetch, handleNextSafeFetch } from "@/lib/fetch-utils";
 
 export const metadata = {
   title: "Nexcart | Home of Premium Deals",
@@ -16,11 +16,11 @@ async function getHomeData() {
   // For homepage data, we use 60s revalidation for high performance
   const fetchOptions = { next: { revalidate: 60 } };
   
-  // We use .catch(() => null) to avoid swallowing Next.js build signals in a try/catch
+  // We use handleNextSafeFetch to avoid swallowing Next.js build signals
   const [products, banners, categories] = await Promise.all([
-    safeFetch(`${API_BASE_URL}/products`, fetchOptions).catch(() => null),
-    safeFetch(`${API_BASE_URL}/banners/active`, fetchOptions).catch(() => null),
-    safeFetch(`${API_BASE_URL}/categories`, fetchOptions).catch(() => null),
+    handleNextSafeFetch(safeFetch(`${API_BASE_URL}/products`, fetchOptions)),
+    handleNextSafeFetch(safeFetch(`${API_BASE_URL}/banners/active`, fetchOptions)),
+    handleNextSafeFetch(safeFetch(`${API_BASE_URL}/categories`, fetchOptions)),
   ]);
 
   if (!products || !banners || !categories) {

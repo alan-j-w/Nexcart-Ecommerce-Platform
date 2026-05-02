@@ -64,6 +64,7 @@ function ProductForm({ initial, onSave, onCancel, saving }: {
   const [price, setPrice] = useState(initial?.price?.toString() || "");
   const [stock, setStock] = useState(initial?.stock?.toString() || "");
   const [category, setCategory] = useState(initial?.category || "");
+  const [isActive, setIsActive] = useState(initial?.isActive ?? true);
   const [images, setImages] = useState<string[]>(initial?.images || []);
   const [error, setError] = useState("");
 
@@ -71,7 +72,7 @@ function ProductForm({ initial, onSave, onCancel, saving }: {
     e.preventDefault();
     if (images.length === 0) { setError("Add at least one product image."); return; }
     setError("");
-    onSave({ name, description: desc, price: Number(price), stock: Number(stock), category, images });
+    onSave({ name, description: desc, price: Number(price), stock: Number(stock), category, images, isActive });
   };
 
   const inputStyle: React.CSSProperties = { width: "100%", padding: "9px 12px", borderRadius: "8px", border: "1px solid #E2E8F0", fontSize: "14px", outline: "none", background: "#F8FAFC", color: "#1E293B" };
@@ -101,6 +102,20 @@ function ProductForm({ initial, onSave, onCancel, saving }: {
           </select>
         </div>
       </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "14px" }}>
+        <input 
+          type="checkbox" 
+          checked={isActive} 
+          onChange={e => setIsActive(e.target.checked)}
+          style={{ width: "16px", height: "16px", cursor: "pointer" }}
+          id="isActive"
+        />
+        <label htmlFor="isActive" style={{ fontSize: "13px", fontWeight: 600, color: "#475569", cursor: "pointer" }}>
+          Product is active and visible to customers
+        </label>
+      </div>
+
       <label style={labelStyle}>Photos <span style={{ fontWeight: 400, color: "#94A3B8" }}>(up to 6)</span></label>
       <MultiImageUpload images={images} onChange={setImages} max={6} />
       <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
@@ -148,6 +163,16 @@ export default function VendorProducts() {
     setSaving(true);
     try { await API.put(`/products/${editProduct._id}`, data); setEditProduct(null); await load(); showToast("Product updated!"); }
     catch (err: any) { showToast(err.response?.data?.error || "Failed"); } finally { setSaving(false); }
+  };
+
+  const handleToggleStatus = async (id: string, currentStatus: boolean) => {
+    try {
+      await API.put(`/products/${id}`, { isActive: !currentStatus });
+      setProducts(products.map(p => p._id === id ? { ...p, isActive: !currentStatus } : p));
+      showToast(`Product ${!currentStatus ? "activated" : "deactivated"}`);
+    } catch (err: any) {
+      showToast("Failed to update status");
+    }
   };
 
   const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || (p.category || "").toLowerCase().includes(search.toLowerCase()));
@@ -214,7 +239,30 @@ export default function VendorProducts() {
                     <td style={{ padding: "12px 16px", fontWeight: 700, color: "#1E293B" }}>₹{p.price?.toLocaleString("en-IN")}</td>
                     <td style={{ padding: "12px 16px", color: p.stock > 0 ? "#059669" : "#DC2626", fontWeight: 600 }}>{p.stock}</td>
                     <td style={{ padding: "12px 16px" }}>
-                      <span style={{ padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, background: p.isActive ? "#D1FAE5" : "#F1F5F9", color: p.isActive ? "#065F46" : "#94A3B8" }}>
+                      <div 
+                        onClick={() => handleToggleStatus(p._id, p.isActive)}
+                        style={{ 
+                          width: "36px", 
+                          height: "18px", 
+                          background: p.isActive ? "#10B981" : "#CBD5E1", 
+                          borderRadius: "20px", 
+                          position: "relative", 
+                          cursor: "pointer", 
+                          transition: "0.2s" 
+                        }}
+                      >
+                        <div style={{ 
+                          position: "absolute", 
+                          top: "2px", 
+                          left: p.isActive ? "20px" : "2px", 
+                          width: "14px", 
+                          height: "14px", 
+                          background: "#fff", 
+                          borderRadius: "50%", 
+                          transition: "0.2s" 
+                        }} />
+                      </div>
+                      <span style={{ fontSize: "10px", color: p.isActive ? "#059669" : "#64748B", fontWeight: 600, marginTop: "4px", display: "block" }}>
                         {p.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>

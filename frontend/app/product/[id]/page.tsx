@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Product } from "@/lib/types";
 import { API_BASE_URL } from "@/lib/constants";
 import ProductDetailView from "@/components/ProductDetailView";
-import { safeFetch } from "@/lib/fetch-utils";
+import { safeFetch, handleNextSafeFetch } from "@/lib/fetch-utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,8 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 async function getProduct(id: string) {
   if (!API_BASE_URL) return { product: null, status: "error" };
   
-  // We use .catch(() => null) to avoid swallowing Next.js build signals
-  const products: Product[] | null = await safeFetch(`${API_BASE_URL}/products`, { next: { revalidate: 30 } }).catch(() => null);
+  // We use handleNextSafeFetch to avoid swallowing Next.js build signals
+  const products: Product[] | null = await handleNextSafeFetch(safeFetch(`${API_BASE_URL}/products`, { next: { revalidate: 30 } }));
   
   if (!products) return { product: null, status: "error" };
   

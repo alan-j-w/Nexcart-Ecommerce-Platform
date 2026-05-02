@@ -22,8 +22,9 @@ exports.updateProduct = async (req, res) => {
     if (product.vendor.toString() !== req.user.id)
       return res.status(403).json({ error: "Not authorized" });
 
-    const { name, description, price, stock, category, images: newImages } = req.body;
-
+    const { name, description, price, stock, category, isActive, images: newImages } = req.body;
+    
+    if (isActive !== undefined) product.isActive = isActive;
     if (name !== undefined) product.name = name;
     if (description !== undefined) product.description = description;
     if (price !== undefined) product.price = Number(price);
@@ -92,7 +93,10 @@ exports.getProducts = async (req, res) => {
     const activeVendorIds = activeVendors.map(v => v._id);
     
     // Build query
-    let query = { vendor: { $in: activeVendorIds } };
+    let query = { 
+      vendor: { $in: activeVendorIds },
+      isActive: { $ne: false } // Only show active products
+    };
     
     if (catParam) {
       // 1. Try to find the official category name from the slug

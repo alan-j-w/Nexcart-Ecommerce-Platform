@@ -1,7 +1,7 @@
 import ProductCard from "@/components/ProductCard";
 import { Product } from "@/lib/types";
 import { API_BASE_URL } from "@/lib/constants";
-import { safeFetch } from "@/lib/fetch-utils";
+import { safeFetch, handleNextSafeFetch } from "@/lib/fetch-utils";
 
 export const metadata = {
   title: "Search Results | Nexcart",
@@ -14,9 +14,9 @@ async function getProducts(query: string, category: string) {
   if (query) params.append("q", query);
   if (category) params.append("category", category);
 
-  const data: Product[] | null = await safeFetch(`${API_BASE_URL}/products?${params.toString()}`, { 
+  const data: Product[] | null = await handleNextSafeFetch(safeFetch(`${API_BASE_URL}/products?${params.toString()}`, { 
     next: { revalidate: 10 } 
-  }).catch(() => null);
+  }));
 
   if (!data) return { products: [], status: "error" };
   
