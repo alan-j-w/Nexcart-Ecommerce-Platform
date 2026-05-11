@@ -10,12 +10,14 @@ export default function Header() {
   const API = createAPI();
   const { user, isAuthenticated, logout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showAllMenu, setShowAllMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchCategory, setSearchCategory] = useState("All");
   const [cartCount, setCartCount] = useState(0);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const allMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -24,6 +26,9 @@ export default function Header() {
     function handleClick(e: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setShowDropdown(false);
+      }
+      if (allMenuRef.current && !allMenuRef.current.contains(e.target as Node)) {
+        setShowAllMenu(false);
       }
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
@@ -267,7 +272,42 @@ export default function Header() {
       {/* Sub-header / Category Navigation */}
       <nav className="mm-subheader">
         <span className="mm-subheader-item mobile-only" style={{ fontWeight: 700 }}>Shop By Category</span>
-        <Link href="/" className="mm-subheader-item desktop-only" prefetch={false}>☰ All</Link>
+        <div className="mm-all-menu-wrapper desktop-only" ref={allMenuRef}>
+          <button
+            className={`mm-subheader-item mm-all-btn${showAllMenu ? " active" : ""}`}
+            onClick={() => setShowAllMenu(v => !v)}
+            aria-expanded={showAllMenu}
+            aria-label="All categories menu"
+          >
+            ☰ All
+          </button>
+          {showAllMenu && (
+            <div className="mm-all-menu">
+              <div className="mm-all-menu-header">Shop by Category</div>
+              {[
+                { label: "Electronics", href: "/search?category=electronics" },
+                { label: "Fashion", href: "/search?category=fashion" },
+                { label: "Home & Kitchen", href: "/search?category=home-kitchen" },
+                { label: "Books", href: "/search?category=books" },
+                { label: "Sports", href: "/search?category=sports" },
+                { label: "Beauty", href: "/search?category=beauty" },
+                { label: "Toys & Games", href: "/search?category=toys-games" },
+                { label: "All Products", href: "/search" },
+              ].map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="mm-all-menu-item"
+                  onClick={() => setShowAllMenu(false)}
+                  prefetch={false}
+                >
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+        <Link href="/" className="mm-subheader-item" prefetch={false}>Home</Link>
         <Link href="/search?category=electronics" className="mm-subheader-item" prefetch={false}>Electronics</Link>
         <Link href="/search?category=fashion" className="mm-subheader-item" prefetch={false}>Fashion</Link>
         <Link href="/search?category=home-kitchen" className="mm-subheader-item desktop-only" prefetch={false}>Home & Kitchen</Link>
