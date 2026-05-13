@@ -62,7 +62,7 @@ export default function Footer() {
           Nex<span style={{ color: "#FBBF24" }}>cart</span>
         </div>
         <div className="mm-footer-copyright">
-          © {new Date().getFullYear()} Nexcart All rights reserved. Multi-Vendor E-Commerce Platform Developed By Alan Joy Wilson.
+          © {new Date().getFullYear()} Nexcart All rights reserved. Multi-Vendor E-Commerce Platform Developed By <a href="https://www.linkedin.com/in/alan-joy-wilson" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "inherit" }}>Alan Joy Wilson</a>.
         </div>
       </div>
     </footer>
