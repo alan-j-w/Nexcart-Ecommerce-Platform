@@ -18,6 +18,7 @@ export default function Header() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const allMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -27,7 +28,10 @@ export default function Header() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setShowDropdown(false);
       }
-      if (allMenuRef.current && !allMenuRef.current.contains(e.target as Node)) {
+      if (
+        (allMenuRef.current && !allMenuRef.current.contains(e.target as Node)) &&
+        (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node))
+      ) {
         setShowAllMenu(false);
       }
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -93,8 +97,12 @@ export default function Header() {
     <header className="mm-header">
       {/* Main Header Row */}
       <div className="mm-header-main">
-        <div className="mm-header-left">
-          <button className="mm-menu-toggle mobile-only" aria-label="Menu">
+        <div className="mm-header-left" ref={mobileMenuRef} style={{ position: "relative" }}>
+          <button 
+            className="mm-menu-toggle mobile-only" 
+            aria-label="Menu"
+            onClick={() => setShowAllMenu(v => !v)}
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="12" x2="21" y2="12" />
               <line x1="3" y1="6" x2="21" y2="6" />
@@ -102,11 +110,38 @@ export default function Header() {
             </svg>
           </button>
           {/* Logo */}
-          <Link href="/" className="mm-logo">
+          <Link href="/" className="mm-logo" onClick={() => setShowAllMenu(false)}>
             <span className="mm-logo-text">
               Nex<span className="mm-logo-accent">cart</span>
             </span>
           </Link>
+          
+          {/* Mobile All Menu */}
+          {showAllMenu && (
+            <div className="mm-all-menu mobile-only" style={{ top: "100%", left: "-14px", flexDirection: "column", alignItems: "stretch" }}>
+              <div className="mm-all-menu-header">Shop by Category</div>
+              {[
+                { label: "Electronics", href: "/search?category=electronics" },
+                { label: "Fashion", href: "/search?category=fashion" },
+                { label: "Home & Kitchen", href: "/search?category=home-kitchen" },
+                { label: "Books", href: "/search?category=books" },
+                { label: "Sports", href: "/search?category=sports" },
+                { label: "Beauty", href: "/search?category=beauty" },
+                { label: "Toys & Games", href: "/search?category=toys-games" },
+                { label: "All Products", href: "/search" },
+              ].map(({ label, href }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="mm-all-menu-item"
+                  onClick={() => setShowAllMenu(false)}
+                  prefetch={false}
+                >
+                  <span>{label}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Deliver To */}
