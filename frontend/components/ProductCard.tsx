@@ -47,7 +47,13 @@ export default function ProductCard({ product, showFavorite = false }: ProductCa
         {product.images && product.images.length > 0 ? (
           <img src={product.images[0]} alt={product.name} />
         ) : (
-          <span>📦</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", background: "#F3F4F6", borderRadius: "4px" }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" />
+              <path d="M12 22V12" />
+            </svg>
+          </div>
         )}
         
         {/* Favorite Heart Button - Flipkart Style */}

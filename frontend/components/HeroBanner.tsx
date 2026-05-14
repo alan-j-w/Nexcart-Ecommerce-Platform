@@ -70,10 +70,14 @@ export default function HeroBanner({ banners = [] }: { banners?: Banner[] }) {
 
       {/* Navigation Arrows */}
       <button className="mm-hero-nav prev" onClick={prev} aria-label="Previous slide">
-        ‹
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
       </button>
       <button className="mm-hero-nav next" onClick={next} aria-label="Next slide">
-        ›
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
       </button>
 
       {/* Bottom Fade */}

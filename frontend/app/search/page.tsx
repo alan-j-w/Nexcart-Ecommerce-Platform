@@ -50,8 +50,13 @@ export default async function SearchPage({
       </div>
 
       {status === "error" && (
-        <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "16px" }}>
-          ⚠️ We&apos;re having trouble reaching our catalog. Please try refreshing.
+        <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "6px" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
+          </svg>
+          We&apos;re having trouble reaching our catalog. Please try refreshing.
         </p>
       )}
 
@@ -85,7 +90,12 @@ export default async function SearchPage({
         </div>
       ) : status !== "error" && (
         <div className="mm-empty" style={{ background: "#fff", borderRadius: "8px" }}>
-          <div className="mm-empty-icon">🔍</div>
+          <div className="mm-empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </div>
           <h3 style={{ fontSize: "18px", fontWeight: 700 }}>No results found</h3>
           <p style={{ fontSize: "14px", marginTop: "8px" }}>
             Try different keywords or browse our categories.

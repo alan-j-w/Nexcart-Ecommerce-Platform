@@ -78,8 +78,13 @@ export default async function Home() {
       <section className="mm-section">
         <h2 className="mm-section-title">Featured Products</h2>
         {status === "error" && (
-          <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "10px" }}>
-            ⚠️ Service temporarily unavailable. Showing cached/partial results.
+          <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <path d="M12 9v4" />
+              <path d="M12 17h.01" />
+            </svg>
+            Service temporarily unavailable. Showing cached/partial results.
           </p>
         )}
         <div className="mm-products-scroll">

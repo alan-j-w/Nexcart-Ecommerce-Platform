@@ -157,7 +157,13 @@ export default function CartPage() {
 
         {items.length === 0 ? (
           <div className="mm-empty">
-            <div className="mm-empty-icon">🛒</div>
+          <div className="mm-empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="8" cy="21" r="1" />
+              <circle cx="19" cy="21" r="1" />
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+            </svg>
+          </div>
             <h3 style={{ fontSize: "20px", fontWeight: 700 }}>Your Nexcart Cart is empty</h3>
             <p style={{ fontSize: "14px", marginTop: "8px" }}>
               Your shopping cart is waiting. Give it purpose — fill it with groceries, electronics, books, and more.
@@ -185,7 +191,13 @@ export default function CartPage() {
                       style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                     />
                   ) : (
-                    "📦"
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%", background: "#F3F4F6", borderRadius: "4px" }}>
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                        <path d="m3.3 7 8.7 5 8.7-5" />
+                        <path d="M12 22V12" />
+                      </svg>
+                    </div>
                   )}
                 </Link>
 
