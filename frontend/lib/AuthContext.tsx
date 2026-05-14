@@ -13,6 +13,7 @@ interface AuthContextType {
   logout: () => void;
   googleLogin: (credential: string) => Promise<void>;
   isAuthenticated: boolean;
+  toggleFavorite: (productId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,6 +82,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const toggleFavorite = async (productId: string) => {
+    if (!token || !user) return;
+    try {
+      const res = await API.post(`/wishlist/${productId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Optimistically update UI
+      setUser(prev => {
+        if (!prev) return null;
+        const favorites = prev.favorites || [];
+        const exists = favorites.includes(productId);
+        return {
+          ...prev,
+          favorites: exists 
+            ? favorites.filter(id => id !== productId)
+            : [...favorites, productId]
+        };
+      });
+    } catch (err) {
+      console.error("Failed to toggle favorite:", err);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -92,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         googleLogin,
         isAuthenticated: !!token && !!user,
+        toggleFavorite,
       }}
     >
       {children}

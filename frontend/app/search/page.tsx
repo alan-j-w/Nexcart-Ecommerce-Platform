@@ -80,7 +80,7 @@ export default async function SearchPage({
       {products.length > 0 ? (
         <div className="mm-product-grid">
           {products.map((p: Product) => (
-            <ProductCard key={p._id} product={p} />
+            <ProductCard key={p._id} product={p} showFavorite={true} />
           ))}
         </div>
       ) : status !== "error" && (

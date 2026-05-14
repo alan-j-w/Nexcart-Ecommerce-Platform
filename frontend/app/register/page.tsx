@@ -168,8 +168,7 @@ export default function RegisterPage() {
             onError={() => {
               setError("Google signup failed.");
             }}
-            useOneTap
-            use_fedcm_for_prompt={false}
+            use_fedcm_for_prompt={true}
           />
         </div>
 

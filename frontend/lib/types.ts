@@ -13,6 +13,7 @@ export interface User {
   isDeleted?: boolean;
   createdAt?: string;
   updatedAt?: string;
+  favorites?: string[];
 }
 
 export interface Product {

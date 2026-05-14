@@ -258,6 +258,9 @@ export default function Header() {
                     <Link href="/orders" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
                       Your Orders
                     </Link>
+                    <Link href="/favorites" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
+                      Your Favorites ❤️
+                    </Link>
                     {user?.role === "vendor" && (
                       <Link href="/vendor/dashboard" className="mm-dropdown-item" onClick={() => setShowDropdown(false)} prefetch={false}>
                         Vendor Dashboard

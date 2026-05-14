@@ -26,7 +26,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "no-id-set";
 
   return (
     <html lang="en">

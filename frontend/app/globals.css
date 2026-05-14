@@ -1709,7 +1709,17 @@ a {
   overflow: visible !important;
 }
 
+.mm-account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
 @media (max-width: 640px) {
+  .mm-account-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
   .mm-auth-card {
     padding: 20px;
     margin: 0 10px;
@@ -1718,5 +1728,34 @@ a {
   
   .mm-auth-page {
     padding-bottom: 40px; /* Extra space for mobile toolbars */
+  }
+
+  .mm-product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .mm-product-card {
+    min-width: unset;
+    max-width: unset;
+    padding: 8px;
+  }
+
+  .mm-product-image {
+    height: 140px;
+  }
+
+  .mm-product-title {
+    font-size: 13px;
+    -webkit-line-clamp: 2;
+  }
+
+  .mm-price-whole {
+    font-size: 16px;
+  }
+  
+  .mm-product-delivery {
+    font-size: 10px;
   }
 }

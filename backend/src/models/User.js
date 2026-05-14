@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   resetPasswordToken: String,
-  resetPasswordExpire: Date
+  resetPasswordExpire: Date,
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

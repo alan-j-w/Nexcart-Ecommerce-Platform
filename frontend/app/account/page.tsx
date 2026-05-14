@@ -33,6 +33,18 @@ export default function AccountPage() {
       link: "/orders",
     },
     {
+      icon: "❤️",
+      title: "Your Favorites",
+      desc: "View and manage your saved products",
+      link: "/favorites",
+    },
+    {
+      icon: "🛒",
+      title: "Shopping Cart",
+      desc: "View, add or remove items and checkout",
+      link: "/cart",
+    },
+    {
       icon: "🔒",
       title: "Login & Security",
       desc: "Edit login, name, and mobile number",
@@ -116,7 +128,7 @@ export default function AccountPage() {
       </div>
 
       {/* Menu Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+      <div className="mm-account-grid">
         {menuItems.map((item) => (
           <Link
             key={item.title}
@@ -131,7 +143,17 @@ export default function AccountPage() {
               alignItems: "flex-start",
               textDecoration: "none",
               color: "inherit",
-              transition: "box-shadow 0.2s",
+              transition: "all 0.2s ease-in-out",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.borderColor = "#6D28D9";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = "#E5E7EB";
             }}
           >
             <span style={{ fontSize: "32px" }}>{item.icon}</span>

@@ -107,6 +107,7 @@ export default function LoginPage() {
             onError={() => {
               setError("Google login failed.");
             }}
+            use_fedcm_for_prompt={true}
           />
         </div>
 
