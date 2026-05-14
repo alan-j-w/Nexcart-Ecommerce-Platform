@@ -5,13 +5,16 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const DASHBOARD_PREFIXES = ["/admin", "/vendor"];
+const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 export default function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  
   const isDashboard = DASHBOARD_PREFIXES.some(p => pathname.startsWith(p));
+  const isAuthPage = AUTH_ROUTES.some(p => pathname === p || pathname.startsWith(p + "/"));
 
-  if (isDashboard) {
-    // Dashboard routes render their own layout (no customer header/footer)
+  if (isDashboard || isAuthPage) {
+    // Dashboard and Auth routes render their own layout
     return <>{children}</>;
   }
 

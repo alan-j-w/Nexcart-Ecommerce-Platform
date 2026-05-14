@@ -76,7 +76,9 @@ body {
   color: var(--mm-text-primary);
   font-family: Arial, Helvetica, sans-serif;
   line-height: 1.5;
-  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height for mobile */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 a {
@@ -939,11 +941,14 @@ a {
    ============================================ */
 
 .mm-auth-page {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--mm-bg-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto; /* Ensure scrolling is possible */
+  overflow-x: hidden;
+  position: relative;
 }
 
 .mm-auth-logo {
@@ -1690,4 +1695,28 @@ a {
   padding: 20px;
   max-width: 1500px;
   margin: 0 auto;
+}
+
+/* ============================================
+   UTILITIES & RESPONSIVE FIXES
+   ============================================ */
+
+.min-h-screen {
+  min-height: 100dvh !important;
+}
+
+.overflow-visible {
+  overflow: visible !important;
+}
+
+@media (max-width: 640px) {
+  .mm-auth-card {
+    padding: 20px;
+    margin: 0 10px;
+    max-width: calc(100% - 20px);
+  }
+  
+  .mm-auth-page {
+    padding-bottom: 40px; /* Extra space for mobile toolbars */
+  }
 }

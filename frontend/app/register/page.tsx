@@ -51,7 +51,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="mm-auth-page">
+    <div className="mm-auth-page min-h-screen overflow-visible">
       <Link href="/" className="mm-auth-logo">
         Nex<span style={{ color: "#FBBF24" }}>cart</span>
       </Link>
