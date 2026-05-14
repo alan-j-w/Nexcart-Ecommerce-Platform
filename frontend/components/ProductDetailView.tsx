@@ -62,7 +62,11 @@ export default function ProductDetailView({ product }: { product: Product }) {
                 style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
               />
             ) : (
-              "📦"
+              <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                <path d="m3.3 7 8.7 5 8.7-5" />
+                <path d="M12 22V12" />
+              </svg>
             )}
           </div>
         </div>
@@ -77,8 +81,14 @@ export default function ProductDetailView({ product }: { product: Product }) {
             Visit the {vendorName} Store
           </p>
 
-          <div className="mm-product-rating" style={{ marginBottom: "12px" }}>
-            <span className="mm-stars" style={{ fontSize: "16px" }}>★★★★☆</span>
+          <div className="mm-product-rating" style={{ marginBottom: "12px", display: "flex", alignItems: "center", gap: "4px" }}>
+            <div style={{ display: "flex", color: "#FBBF24" }}>
+              {[1, 2, 3, 4, 5].map((s) => (
+                <svg key={s} width="16" height="16" viewBox="0 0 24 24" fill={s <= 4 ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+              ))}
+            </div>
             <span style={{ fontSize: "13px", color: "#6D28D9" }}>
               {((product.name.length * 13) % 5000 + 50).toLocaleString()} ratings
             </span>
@@ -114,7 +124,16 @@ export default function ProductDetailView({ product }: { product: Product }) {
             <span style={{ fontSize: "14px", verticalAlign: "top" }}>₹</span>
             {product.price.toLocaleString("en-IN")}
           </p>
-          <p style={{ fontSize: "13px", color: "#059669", marginBottom: "4px" }}>🚚 FREE Delivery</p>
+          <p style={{ fontSize: "13px", color: "#059669", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 17h4V5H2v12h3" />
+              <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5" />
+              <path d="M14 17h1" />
+              <circle cx="7.5" cy="17.5" r="2.5" />
+              <circle cx="17.5" cy="17.5" r="2.5" />
+            </svg>
+            FREE Delivery
+          </p>
           <p style={{ fontSize: "12px", color: "#6B7280", marginBottom: "16px" }}>Delivered by Nexcart Logistics</p>
 
           {product.stock > 0 ? (

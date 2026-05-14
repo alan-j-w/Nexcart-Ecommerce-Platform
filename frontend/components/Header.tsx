@@ -147,8 +147,12 @@ export default function Header() {
         {/* Deliver To */}
         <div className="mm-deliver-to desktop-only">
           <span className="mm-deliver-label">Deliver to</span>
-          <span className="mm-deliver-location">
-            📍 India
+          <span className="mm-deliver-location" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            India
           </span>
         </div>
 
@@ -235,7 +239,7 @@ export default function Header() {
                   <circle cx="12" cy="7" r="4" />
                 </svg>
               </div>
-              <span className="mm-nav-value desktop-only">Account & Lists ▾</span>
+              <span className="mm-nav-value desktop-only">Account & Lists</span>
             </div>
 
             {showDropdown && (
@@ -319,8 +323,14 @@ export default function Header() {
             onClick={() => setShowAllMenu(v => !v)}
             aria-expanded={showAllMenu}
             aria-label="All categories menu"
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
           >
-            ☰ All
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+            All
           </button>
           {showAllMenu && (
             <div className="mm-all-menu">
