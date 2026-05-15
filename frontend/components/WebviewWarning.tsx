@@ -21,8 +21,11 @@ export default function WebviewWarning() {
         
         // Use a timeout to avoid blocking the initial render
         setTimeout(() => {
-          window.location.href = intentUrl;
-        }, 500);
+          // Double check if we are still in a webview (in case of re-renders)
+          if (isInAppBrowser()) {
+            window.location.href = intentUrl;
+          }
+        }, 800);
       }
     }
   }, []);
@@ -45,60 +48,60 @@ export default function WebviewWarning() {
     } else {
       // For iOS, we can't force Safari, so we copy the link and tell them to paste
       handleCopy();
-      alert("Link copied! Please open Safari and paste the link to continue.");
     }
   };
+
+  const isIOS = typeof window !== "undefined" && /iPad|iPhone|iPod/.test(window.navigator.userAgent);
 
   return (
     <div className="mm-webview-overlay">
       <div className="mm-webview-card">
-        <div className="mm-webview-header">
-          <div className="mm-webview-icon-wrapper">
-            {recommendation.icon}
-          </div>
-          <h2>Switch to {recommendation.name}</h2>
+        <div className="mm-webview-icon-wrapper">
+          {recommendation.icon}
         </div>
         
-        <div className="mm-webview-body">
-          <p>
-            Secure <strong>Google Login</strong> is restricted in this app&apos;s browser. Switch to a standard browser to continue your shopping journey.
-          </p>
+        <h2>Security Redirect</h2>
+        
+        <p>
+          You&apos;re currently in a restricted in-app browser. 
+          <strong> Google Login</strong> and other features are disabled here for your security.
+        </p>
 
-          <div className="mm-webview-action-group">
-            <button 
-              className="mm-webview-launch-btn" 
-              onClick={handleLaunch}
-            >
-              🚀 Launch in {recommendation.name}
-            </button>
-            
-            <button className="mm-webview-copy-btn" onClick={handleCopy}>
-              {copied ? "✅ Link Copied!" : "📋 Copy Site Link"}
-            </button>
-          </div>
-
-          <div className="mm-webview-instruction">
-            <h4>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="16" x2="12" y2="12" />
-                <line x1="12" y1="8" x2="12.01" y2="8" />
-              </svg>
-              Quick Steps for LinkedIn/iOS:
-            </h4>
+        <div className="mm-webview-instruction">
+          <h4>{isIOS ? "How to fix on iOS:" : "How to fix on Android:"}</h4>
+          {isIOS ? (
             <ol>
-              <li>Tap the <span className="highlight">three dots (•••)</span> or <span className="highlight">Share</span> icon.</li>
-              <li>Select <span className="highlight">&quot;Open in Browser&quot;</span> or <span className="highlight">&quot;Safari&quot;</span>.</li>
-              <li>Complete your login securely.</li>
+              <li>Tap the <strong>menu (•••)</strong> or <strong>Share</strong> button.</li>
+              <li>Select <strong>&quot;Open in Safari&quot;</strong>.</li>
+              <li>Or copy the link below and paste it in Safari.</li>
             </ol>
-          </div>
+          ) : (
+            <ol>
+              <li>Tap <strong>&quot;Launch Chrome&quot;</strong> below.</li>
+              <li>If it fails, tap the <strong>menu (⋮)</strong> and select <strong>&quot;Open in Browser&quot;</strong>.</li>
+            </ol>
+          )}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <button 
+            className="mm-webview-copy-btn" 
+            style={{ background: "var(--mm-purple-600)", color: "white" }} 
+            onClick={handleLaunch}
+          >
+            🚀 {isIOS ? "Copy Link to Safari" : `Launch ${recommendation.name}`}
+          </button>
+
+          <button className="mm-webview-copy-btn" onClick={handleCopy} style={{ background: "transparent", border: "1px solid var(--mm-purple-200)", color: "var(--mm-purple-900)" }}>
+            {copied ? "✅ Link Copied!" : "📋 Copy URL Manually"}
+          </button>
         </div>
 
         <button 
           className="mm-webview-close" 
           onClick={() => setShowWarning(false)}
         >
-          Continue in current browser (May fail)
+          Continue anyway (Features may break)
         </button>
       </div>
     </div>

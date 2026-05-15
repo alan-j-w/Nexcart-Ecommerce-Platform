@@ -17,14 +17,6 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isWebview, setIsWebview] = useState(false);
-
-  useState(() => {
-    if (typeof window !== "undefined") {
-      const { isInAppBrowser } = require("@/lib/webviewDetector");
-      setIsWebview(isInAppBrowser());
-    }
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,36 +162,21 @@ export default function RegisterPage() {
               if (credentialResponse.credential) {
                 googleLogin(credentialResponse.credential)
                   .then(() => router.push("/"))
-                  .catch((err: any) => setError("Google signup failed."));
+                  .catch((err: any) => {
+                    console.error("Google Signup Backend Error:", err);
+                    setError("Google signup failed. Please try a standard browser.");
+                  });
               }
             }}
             onError={() => {
-              setError("Google signup failed.");
+              setError("Google signup failed. This browser might be restricted.");
             }}
             use_fedcm_for_prompt={true}
+            ux_mode="popup"
+            theme="filled_blue"
+            shape="pill"
           />
         </div>
-
-        {isWebview && (
-          <p className="mm-webview-hint" style={{ 
-            fontSize: "12px", 
-            color: "#B45309", 
-            textAlign: "center", 
-            marginTop: "10px",
-            background: "#FFFBEB",
-            padding: "8px",
-            borderRadius: "6px",
-            border: "1px solid #FDE68A"
-          }}>
-            ⚠️ <strong>Google Sign Up</strong> may be blocked in this app. For best results, 
-            <button 
-              onClick={() => window.location.reload()} 
-              style={{ background: "none", border: "none", color: "#7C3AED", textDecoration: "underline", fontWeight: 700, cursor: "pointer", marginLeft: "4px" }}
-            >
-              open in an external browser
-            </button>.
-          </p>
-        )}
 
         <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "16px" }}>
           By creating an account, you agree to Nexcart&apos;s Conditions of Use and Privacy Notice.

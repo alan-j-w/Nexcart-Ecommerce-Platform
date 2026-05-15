@@ -17,135 +17,94 @@
 
 .mm-webview-card {
   background: #fff;
-  border-radius: 24px;
-  max-width: 420px;
+  border-radius: 20px;
+  max-width: 450px;
   width: 100%;
   padding: 32px;
   text-align: center;
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
-  animation: mmSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.mm-webview-header {
-  margin-bottom: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: mmSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mm-webview-icon-wrapper {
-  width: 72px;
-  height: 72px;
-  background: #f3f0ff;
-  border-radius: 20px;
+  width: 80px;
+  height: 80px;
+  background: var(--mm-purple-100);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 36px;
-  transform: rotate(-5deg);
+  margin: 0 auto 20px;
+  font-size: 40px;
 }
 
 .mm-webview-card h2 {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 800;
-  color: #1e1b4b;
-  margin: 0;
+  color: var(--mm-purple-900);
+  margin-bottom: 12px;
 }
 
-.mm-webview-body p {
-  color: #4b5563;
+.mm-webview-card p {
+  color: var(--mm-text-secondary);
   font-size: 15px;
   line-height: 1.6;
   margin-bottom: 24px;
 }
 
-.mm-webview-action-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.mm-webview-launch-btn {
-  background: #7c3aed;
-  color: #fff;
-  border: none;
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-}
-
-.mm-webview-launch-btn:hover {
-  background: #6d28d9;
-  transform: translateY(-2px);
-}
-
-.mm-webview-copy-btn {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #e5e7eb;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.mm-webview-copy-btn:hover {
-  background: #e5e7eb;
-}
-
 .mm-webview-instruction {
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
-  border-radius: 16px;
+  background: var(--mm-bg-secondary);
+  border-radius: 12px;
   padding: 16px;
+  margin-bottom: 24px;
   text-align: left;
 }
 
 .mm-webview-instruction h4 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: #111827;
-  margin-bottom: 10px;
+  color: var(--mm-text-primary);
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .mm-webview-instruction ol {
-  padding-left: 18px;
-  font-size: 12px;
-  color: #4b5563;
-  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--mm-text-secondary);
 }
 
 .mm-webview-instruction li {
-  margin-bottom: 6px;
-}
-
-.mm-webview-instruction .highlight {
-  color: #7c3aed;
-  font-weight: 700;
+  margin-bottom: 4px;
 }
 
 .mm-webview-close {
+  color: var(--mm-text-muted);
+  font-size: 13px;
   background: none;
   border: none;
-  color: #9ca3af;
-  font-size: 12px;
-  margin-top: 24px;
   cursor: pointer;
+  margin-top: 16px;
   text-decoration: underline;
-  transition: color 0.2s;
 }
 
-.mm-webview-close:hover {
-  color: #6b7280;
+.mm-webview-copy-btn {
+  background: var(--mm-gold-400);
+  color: var(--mm-header-bg);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.2s;
+}
+
+.mm-webview-copy-btn:active {
+  transform: scale(0.98);
 }
 
 @keyframes mmFadeIn {
@@ -154,6 +113,6 @@
 }
 
 @keyframes mmSlideUp {
-  from { transform: translateY(30px); opacity: 0; }
+  from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
