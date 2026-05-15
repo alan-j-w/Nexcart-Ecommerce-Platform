@@ -58,13 +58,13 @@ export const isInAppBrowser = (): boolean => {
 };
 
 export const getBrowserRecommendation = (): { name: string; icon: string } => {
-  if (typeof window === "undefined") return { name: "Chrome", icon: "🌐" };
+  if (typeof window === "undefined") return { name: "Chrome", icon: "" };
 
   const ua = window.navigator.userAgent;
   if (/android/i.test(ua)) {
-    return { name: "Chrome", icon: "🌐" };
+    return { name: "Chrome", icon: "" };
   } else if (/iPad|iPhone|iPod/.test(ua)) {
-    return { name: "Safari", icon: "🧭" };
+    return { name: "Safari", icon: "" };
   }
-  return { name: "Chrome", icon: "🌐" };
+  return { name: "Chrome", icon: "" };
 };

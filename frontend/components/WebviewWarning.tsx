@@ -41,7 +41,11 @@ export default function WebviewWarning() {
       <div className="mm-webview-card">
         <div className="mm-webview-header">
           <div className="mm-webview-icon-wrapper">
-            {recommendation.icon}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="2" y1="12" x2="22" y2="12" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
           </div>
           <div>
             <h2>{isLinkedIn ? "App Recommendation" : "Better Experience"}</h2>
@@ -49,7 +53,7 @@ export default function WebviewWarning() {
         </div>
         
         <p>
-          For the best experience, we recommend opening Nexcart in <strong>{recommendation.name}</strong>. 
+          For the best experience, we recommend using <strong>{recommendation.name}</strong>. 
           This ensures all features like Google Login work perfectly.
         </p>
 
@@ -57,13 +61,13 @@ export default function WebviewWarning() {
           <h4>{isIOS ? "How to switch on iOS:" : "How to switch on Android:"}</h4>
           {isIOS || (isLinkedIn && isAndroid) ? (
             <ol>
-              <li>Tap the <strong>menu (••• or ⋮)</strong> in the top corner.</li>
-              <li>Select <strong>&quot;Open in Browser&quot;</strong> or <strong>&quot;Safari&quot;</strong>.</li>
+              <li>Tap the <strong>menu (••• or ⋮)</strong></li>
+              <li>Select <strong>&quot;Open in Browser&quot;</strong></li>
             </ol>
           ) : (
             <ol>
-              <li>Tap <strong>&quot;Open in Chrome&quot;</strong> below.</li>
-              <li>If it fails, use the menu (⋮) to <strong>&quot;Open in Browser&quot;</strong>.</li>
+              <li>Tap <strong>&quot;Open Chrome&quot;</strong> below</li>
+              <li>Or use the menu (⋮) to <strong>&quot;Open in Browser&quot;</strong></li>
             </ol>
           )}
         </div>
@@ -76,14 +80,14 @@ export default function WebviewWarning() {
               rel="noopener noreferrer"
               className="mm-webview-copy-btn mm-webview-btn-primary" 
             >
-              🚀 Open Chrome
+              Open Chrome
             </a>
           ) : (
             <button 
               className="mm-webview-copy-btn mm-webview-btn-primary" 
               onClick={handleCopy}
             >
-              🚀 {copied ? "Copied!" : "Copy URL"}
+              {copied ? "Copied!" : "Copy URL"}
             </button>
           )}
 
