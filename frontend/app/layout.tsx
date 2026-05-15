@@ -2,9 +2,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "./webview.css";
 import { AuthProvider } from "@/lib/AuthContext";
 import ConditionalShell from "@/components/ConditionalShell";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import WebviewWarning from "@/components/WebviewWarning";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +35,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <GoogleOAuthProvider clientId={googleClientId}>
           <AuthProvider>
+            <WebviewWarning />
             <ConditionalShell>{children}</ConditionalShell>
           </AuthProvider>
         </GoogleOAuthProvider>
