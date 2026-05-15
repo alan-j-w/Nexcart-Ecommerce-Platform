@@ -70,6 +70,12 @@ export default function WebviewWarning() {
           🚀 Launch {recommendation.name}
         </button>
 
+        {typeof window !== "undefined" && /iPad|iPhone|iPod/.test(window.navigator.userAgent) && (
+          <p style={{ fontSize: "12px", color: "var(--mm-text-muted)", marginBottom: "16px" }}>
+            Or tap the menu icons (••• or share) and select <strong>&quot;Open in Safari&quot;</strong>
+          </p>
+        )}
+
         <button className="mm-webview-copy-btn" onClick={handleCopy}>
           {copied ? "✅ Link Copied!" : "📋 Copy Link Manually"}
         </button>
