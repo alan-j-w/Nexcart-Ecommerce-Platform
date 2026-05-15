@@ -39,17 +39,18 @@ export default function WebviewWarning() {
   return (
     <div className="mm-webview-overlay">
       <div className="mm-webview-card">
-        <div className="mm-webview-icon-wrapper">
-          {recommendation.icon}
+        <div className="mm-webview-header">
+          <div className="mm-webview-icon-wrapper">
+            {recommendation.icon}
+          </div>
+          <div>
+            <h2>{isLinkedIn ? "App Recommendation" : "Better Experience"}</h2>
+          </div>
         </div>
         
-        <h2>{isLinkedIn ? "LinkedIn Link Restricted" : "Better Experience Available"}</h2>
-        
         <p>
-          {isLinkedIn 
-            ? "LinkedIn restricts some features (like Google Login) in their app." 
-            : "You're currently using an in-app browser with limited features."}
-          For the best experience, we recommend using <strong>{recommendation.name}</strong>.
+          For the best experience, we recommend opening Nexcart in <strong>{recommendation.name}</strong>. 
+          This ensures all features like Google Login work perfectly.
         </p>
 
         <div className="mm-webview-instruction">
@@ -58,7 +59,6 @@ export default function WebviewWarning() {
             <ol>
               <li>Tap the <strong>menu (••• or ⋮)</strong> in the top corner.</li>
               <li>Select <strong>&quot;Open in Browser&quot;</strong> or <strong>&quot;Safari&quot;</strong>.</li>
-              <li>Or use the copy button below.</li>
             </ol>
           ) : (
             <ol>
@@ -68,39 +68,36 @@ export default function WebviewWarning() {
           )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="mm-webview-actions">
           {isAndroid && !isLinkedIn ? (
             <a 
               href={androidIntent}
               target="_blank"
               rel="noopener noreferrer"
-              className="mm-webview-copy-btn" 
-              style={{ background: "var(--mm-purple-600)", color: "white", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center" }} 
+              className="mm-webview-copy-btn mm-webview-btn-primary" 
             >
-              🚀 Open in {recommendation.name}
+              🚀 Open Chrome
             </a>
           ) : (
             <button 
-              className="mm-webview-copy-btn" 
-              style={{ background: "var(--mm-purple-600)", color: "white" }} 
+              className="mm-webview-copy-btn mm-webview-btn-primary" 
               onClick={handleCopy}
             >
-              🚀 {copied ? "✅ URL Copied!" : `Copy Link for ${recommendation.name}`}
+              🚀 {copied ? "Copied!" : "Copy URL"}
             </button>
           )}
 
           <button 
-            className="mm-webview-copy-btn" 
-            onClick={() => setShowWarning(false)} 
-            style={{ background: "var(--mm-bg-secondary)", color: "var(--mm-text-primary)" }}
+            className="mm-webview-copy-btn mm-webview-btn-secondary" 
+            onClick={() => setShowWarning(false)}
           >
-            Continue here anyway
+            Not now
           </button>
         </div>
 
-        <p style={{ fontSize: "11px", color: "var(--mm-text-muted)", marginTop: "16px" }}>
-          {isLinkedIn ? "LinkedIn policy may block direct app opening." : "Standalone browsers provide better security and speed."}
-        </p>
+        <div className="mm-webview-footer-text">
+          {isLinkedIn ? "LinkedIn may restrict direct opening. Use the menu above if needed." : "Standalone browsers are faster and more secure."}
+        </div>
       </div>
     </div>
   );

@@ -1,110 +1,140 @@
 /* ============================================
-   WEBVIEW WARNING MODAL
+   WEBVIEW WARNING - MODERN BOTTOM SHEET
    ============================================ */
 
 .mm-webview-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(30, 16, 40, 0.95);
+  background: rgba(0, 0, 0, 0.2); /* Much lighter overlay */
   display: flex;
-  align-items: center;
+  align-items: flex-end; /* Position at bottom */
   justify-content: center;
   z-index: 10000;
-  padding: 20px;
-  backdrop-filter: blur(8px);
-  animation: mmFadeIn 0.3s ease;
+  padding: 0;
+  pointer-events: none; /* Allow clicking through to the background if needed? No, wait. */
+  animation: mmFadeIn 0.4s ease;
 }
 
 .mm-webview-card {
   background: #fff;
-  border-radius: 20px;
-  max-width: 450px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  max-width: 500px;
   width: 100%;
-  padding: 32px;
-  text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  animation: mmSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 24px 24px 40px;
+  text-align: left;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  animation: mmSlideUpSheet 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: auto; /* Re-enable pointer events for the card */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mm-webview-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .mm-webview-icon-wrapper {
-  width: 80px;
-  height: 80px;
+  width: 48px;
+  height: 48px;
   background: var(--mm-purple-100);
-  border-radius: 50%;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
-  font-size: 40px;
+  font-size: 24px;
+  flex-shrink: 0;
 }
 
 .mm-webview-card h2 {
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--mm-purple-900);
-  margin-bottom: 12px;
+  margin: 0;
+  letter-spacing: -0.3px;
 }
 
 .mm-webview-card p {
   color: var(--mm-text-secondary);
-  font-size: 15px;
-  line-height: 1.6;
-  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
 }
 
 .mm-webview-instruction {
-  background: var(--mm-bg-secondary);
-  border-radius: 12px;
+  background: #F9FAFB;
+  border-radius: 16px;
   padding: 16px;
-  margin-bottom: 24px;
-  text-align: left;
+  margin-bottom: 20px;
+  border: 1px solid #F3F4F6;
 }
 
 .mm-webview-instruction h4 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--mm-text-primary);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .mm-webview-instruction ol {
-  padding-left: 20px;
+  padding-left: 18px;
   font-size: 13px;
   color: var(--mm-text-secondary);
 }
 
 .mm-webview-instruction li {
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
-.mm-webview-close {
-  color: var(--mm-text-muted);
-  font-size: 13px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-top: 16px;
-  text-decoration: underline;
+.mm-webview-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .mm-webview-copy-btn {
-  background: var(--mm-gold-400);
-  color: var(--mm-header-bg);
   border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 15px;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14px;
   cursor: pointer;
-  width: 100%;
-  transition: transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
 }
 
-.mm-webview-copy-btn:active {
-  transform: scale(0.98);
+.mm-webview-btn-primary {
+  background: var(--mm-purple-600);
+  color: #fff;
+}
+
+.mm-webview-btn-primary:active {
+  background: var(--mm-purple-700);
+  transform: scale(0.97);
+}
+
+.mm-webview-btn-secondary {
+  background: var(--mm-bg-secondary);
+  color: var(--mm-text-primary);
+}
+
+.mm-webview-btn-secondary:active {
+  background: var(--mm-bg-tertiary);
+  transform: scale(0.97);
+}
+
+.mm-webview-footer-text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--mm-text-muted);
 }
 
 @keyframes mmFadeIn {
@@ -112,7 +142,8 @@
   to { opacity: 1; }
 }
 
-@keyframes mmSlideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+@keyframes mmSlideUpSheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
+
