@@ -20,6 +20,9 @@ export default function WebviewWarning() {
 
   const recommendation = getBrowserRecommendation();
   const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+  const ua = typeof window !== "undefined" ? window.navigator.userAgent : "";
+  const isAndroid = /android/i.test(ua);
+  const isIOS = /iPad|iPhone|iPod/.test(ua);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(currentUrl);
@@ -27,16 +30,10 @@ export default function WebviewWarning() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleLaunch = () => {
-    const ua = window.navigator.userAgent;
-    if (/android/i.test(ua)) {
-      window.location.href = `intent://${window.location.href.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
-    } else {
-      handleCopy();
-    }
-  };
-
-  const isIOS = typeof window !== "undefined" && /iPad|iPhone|iPod/.test(window.navigator.userAgent);
+  // Construct the Android intent URL
+  const androidIntent = isAndroid 
+    ? `intent://${currentUrl.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(currentUrl)};end`
+    : "#";
 
   return (
     <div className="mm-webview-overlay">
@@ -68,13 +65,23 @@ export default function WebviewWarning() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <button 
-            className="mm-webview-copy-btn" 
-            style={{ background: "var(--mm-purple-600)", color: "white" }} 
-            onClick={handleLaunch}
-          >
-            🚀 {isIOS ? "Copy Link for Safari" : `Open in ${recommendation.name}`}
-          </button>
+          {isAndroid ? (
+            <a 
+              href={androidIntent}
+              className="mm-webview-copy-btn" 
+              style={{ background: "var(--mm-purple-600)", color: "white", textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center" }} 
+            >
+              🚀 Open in {recommendation.name}
+            </a>
+          ) : (
+            <button 
+              className="mm-webview-copy-btn" 
+              style={{ background: "var(--mm-purple-600)", color: "white" }} 
+              onClick={handleCopy}
+            >
+              🚀 {copied ? "✅ Link Copied!" : "Copy Link for Safari"}
+            </button>
+          )}
 
           <button 
             className="mm-webview-copy-btn" 
