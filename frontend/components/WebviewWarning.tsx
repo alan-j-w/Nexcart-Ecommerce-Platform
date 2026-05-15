@@ -52,39 +52,53 @@ export default function WebviewWarning() {
   return (
     <div className="mm-webview-overlay">
       <div className="mm-webview-card">
-        <div className="mm-webview-icon-wrapper">
-          {recommendation.icon}
+        <div className="mm-webview-header">
+          <div className="mm-webview-icon-wrapper">
+            {recommendation.icon}
+          </div>
+          <h2>Switch to {recommendation.name}</h2>
         </div>
         
-        <h2>Switch to {recommendation.name}</h2>
-        
-        <p>
-          Google Login requires a standalone browser. Tap the button below to switch and get the full experience.
-        </p>
-
-        <button 
-          className="mm-webview-copy-btn" 
-          style={{ marginBottom: "12px", background: "var(--mm-purple-600)", color: "white" }} 
-          onClick={handleLaunch}
-        >
-          🚀 Launch {recommendation.name}
-        </button>
-
-        {typeof window !== "undefined" && /iPad|iPhone|iPod/.test(window.navigator.userAgent) && (
-          <p style={{ fontSize: "12px", color: "var(--mm-text-muted)", marginBottom: "16px" }}>
-            Or tap the menu icons (••• or share) and select <strong>&quot;Open in Safari&quot;</strong>
+        <div className="mm-webview-body">
+          <p>
+            Secure <strong>Google Login</strong> is restricted in this app&apos;s browser. Switch to a standard browser to continue your shopping journey.
           </p>
-        )}
 
-        <button className="mm-webview-copy-btn" onClick={handleCopy}>
-          {copied ? "✅ Link Copied!" : "📋 Copy Link Manually"}
-        </button>
+          <div className="mm-webview-action-group">
+            <button 
+              className="mm-webview-launch-btn" 
+              onClick={handleLaunch}
+            >
+              🚀 Launch in {recommendation.name}
+            </button>
+            
+            <button className="mm-webview-copy-btn" onClick={handleCopy}>
+              {copied ? "✅ Link Copied!" : "📋 Copy Site Link"}
+            </button>
+          </div>
+
+          <div className="mm-webview-instruction">
+            <h4>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              Quick Steps for LinkedIn/iOS:
+            </h4>
+            <ol>
+              <li>Tap the <span className="highlight">three dots (•••)</span> or <span className="highlight">Share</span> icon.</li>
+              <li>Select <span className="highlight">&quot;Open in Browser&quot;</span> or <span className="highlight">&quot;Safari&quot;</span>.</li>
+              <li>Complete your login securely.</li>
+            </ol>
+          </div>
+        </div>
 
         <button 
           className="mm-webview-close" 
           onClick={() => setShowWarning(false)}
         >
-          Dismiss
+          Continue in current browser (May fail)
         </button>
       </div>
     </div>

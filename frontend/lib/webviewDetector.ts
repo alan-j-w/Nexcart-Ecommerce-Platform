@@ -17,8 +17,11 @@ export const isInAppBrowser = (): boolean => {
   const isTikTok = /TikTok/i.test(ua);
   const isSnapchat = /Snapchat/i.test(ua);
   const isPinterest = /Pinterest/i.test(ua);
+  const isTwitter = /Twitter|TwitterAndroid/i.test(ua);
+  const isDiscord = /Discord/i.test(ua);
+  const isSlack = /Slack/i.test(ua);
 
-  if (isLinkedIn || isFacebook || isInstagram || isWhatsApp || isTikTok || isSnapchat || isPinterest) {
+  if (isLinkedIn || isFacebook || isInstagram || isWhatsApp || isTikTok || isSnapchat || isPinterest || isTwitter || isDiscord || isSlack) {
     return true;
   }
 
@@ -27,15 +30,21 @@ export const isInAppBrowser = (): boolean => {
     return true;
   }
 
+  // Detect Google's specific block for WebViews (disallowed_useragent)
+  // Sometimes we can detect it via the user agent containing "GSA" (Google Search App)
+  const isGoogleSearchApp = /GSA\/[0-9.]+/i.test(ua);
+  if (isGoogleSearchApp) return true;
+
   // iOS WebView detection (non-Safari browsers on iOS)
   const isIOS = /iPad|iPhone|iPod/.test(ua) && !(window as any).MSStream;
   const isSafari = /Safari/i.test(ua);
   const isChromeIOS = /CriOS/i.test(ua);
   const isFirefoxIOS = /FxiOS/i.test(ua);
   const isEdgeIOS = /EdgiOS/i.test(ua);
+  const isOperaIOS = /OPiOS/i.test(ua);
 
   // If it's iOS but not any of the major standalone browsers
-  if (isIOS && !isSafari && !isChromeIOS && !isFirefoxIOS && !isEdgeIOS) {
+  if (isIOS && !isSafari && !isChromeIOS && !isFirefoxIOS && !isEdgeIOS && !isOperaIOS) {
     return true;
   }
   
