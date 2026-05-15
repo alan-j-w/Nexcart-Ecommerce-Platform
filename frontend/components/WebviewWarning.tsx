@@ -10,23 +10,9 @@ export default function WebviewWarning() {
 
   useEffect(() => {
     setMounted(true);
+    // Only show if in a webview
     if (isInAppBrowser()) {
       setShowWarning(true);
-
-      // Attempt auto-launch for Android Chrome
-      const ua = window.navigator.userAgent;
-      if (/android/i.test(ua)) {
-        // This intent scheme forces opening the URL in Chrome on Android
-        const intentUrl = `intent://${window.location.href.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
-        
-        // Use a timeout to avoid blocking the initial render
-        setTimeout(() => {
-          // Double check if we are still in a webview (in case of re-renders)
-          if (isInAppBrowser()) {
-            window.location.href = intentUrl;
-          }
-        }, 800);
-      }
     }
   }, []);
 
@@ -46,7 +32,6 @@ export default function WebviewWarning() {
     if (/android/i.test(ua)) {
       window.location.href = `intent://${window.location.href.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
     } else {
-      // For iOS, we can't force Safari, so we copy the link and tell them to paste
       handleCopy();
     }
   };
@@ -60,25 +45,24 @@ export default function WebviewWarning() {
           {recommendation.icon}
         </div>
         
-        <h2>Security Redirect</h2>
+        <h2>Better Experience Available</h2>
         
         <p>
-          You&apos;re currently in a restricted in-app browser. 
-          <strong> Google Login</strong> and other features are disabled here for your security.
+          You&apos;re currently using an in-app browser. For the best experience, including 
+          <strong> Google Login</strong> and faster performance, we recommend using {recommendation.name}.
         </p>
 
         <div className="mm-webview-instruction">
-          <h4>{isIOS ? "How to fix on iOS:" : "How to fix on Android:"}</h4>
+          <h4>{isIOS ? "How to switch on iOS:" : "How to switch on Android:"}</h4>
           {isIOS ? (
             <ol>
               <li>Tap the <strong>menu (•••)</strong> or <strong>Share</strong> button.</li>
               <li>Select <strong>&quot;Open in Safari&quot;</strong>.</li>
-              <li>Or copy the link below and paste it in Safari.</li>
             </ol>
           ) : (
             <ol>
-              <li>Tap <strong>&quot;Launch Chrome&quot;</strong> below.</li>
-              <li>If it fails, tap the <strong>menu (⋮)</strong> and select <strong>&quot;Open in Browser&quot;</strong>.</li>
+              <li>Tap <strong>&quot;Open in Chrome&quot;</strong> below.</li>
+              <li>Or tap the <strong>menu (⋮)</strong> and select <strong>&quot;Open in Browser&quot;</strong>.</li>
             </ol>
           )}
         </div>
@@ -89,19 +73,24 @@ export default function WebviewWarning() {
             style={{ background: "var(--mm-purple-600)", color: "white" }} 
             onClick={handleLaunch}
           >
-            🚀 {isIOS ? "Copy Link to Safari" : `Launch ${recommendation.name}`}
+            🚀 {isIOS ? "Copy Link for Safari" : `Open in ${recommendation.name}`}
           </button>
 
-          <button className="mm-webview-copy-btn" onClick={handleCopy} style={{ background: "transparent", border: "1px solid var(--mm-purple-200)", color: "var(--mm-purple-900)" }}>
-            {copied ? "✅ Link Copied!" : "📋 Copy URL Manually"}
+          <button 
+            className="mm-webview-copy-btn" 
+            onClick={() => setShowWarning(false)} 
+            style={{ background: "var(--mm-bg-secondary)", color: "var(--mm-text-primary)" }}
+          >
+            Continue here anyway
           </button>
         </div>
 
         <button 
           className="mm-webview-close" 
-          onClick={() => setShowWarning(false)}
+          onClick={handleCopy}
+          style={{ marginTop: "12px" }}
         >
-          Continue anyway (Features may break)
+          {copied ? "✅ URL Copied!" : "📋 Copy Website URL"}
         </button>
       </div>
     </div>
