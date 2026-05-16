@@ -701,6 +701,7 @@ a {
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-bottom: 6px;
@@ -1813,6 +1814,7 @@ a {
   .mm-product-title {
     font-size: 13px;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 
   .mm-price-whole {
