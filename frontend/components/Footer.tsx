@@ -18,16 +18,27 @@ export default function Footer() {
         <div className="mm-footer-col">
           <h4>Get to Know Us</h4>
           <ul>
-            <li>About Nexcart</li>
-            <li>Careers</li>
-            <li>Press Releases</li>
+            <li><Link href="/about">About Nexcart</Link></li>
+            <li><Link href="/careers">Careers</Link></li>
+            <li><Link href="/press">Press Releases</Link></li>
             <li>Nexcart Science</li>
           </ul>
         </div>
 
         <div className="mm-footer-col">
           <h4>Connect with Us</h4>
-          <ul>
+          <div className="mm-footer-socials">
+            <a href="#" aria-label="Facebook">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+          </div>
+          <ul style={{ marginTop: "12px" }}>
             <li>Facebook</li>
             <li>Twitter</li>
             <li>Instagram</li>
@@ -59,10 +70,16 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="mm-footer-bottom">
         <div className="mm-footer-logo">
-          Nex<span style={{ color: "#FBBF24" }}>cart</span>
+          Nex<span className="mm-logo-accent">cart</span>
         </div>
         <div className="mm-footer-copyright">
-          © {new Date().getFullYear()} Nexcart All rights reserved. Multi-Vendor E-Commerce Platform Developed By <a href="https://www.linkedin.com/in/alan-joy-wilson" target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "inherit" }}>Alan Joy Wilson</a>.
+          © {new Date().getFullYear()} Nexcart All rights reserved. 
+          <div style={{ marginTop: "8px", opacity: 0.8 }}>
+            Multi-Vendor E-Commerce Platform Developed By 
+            <a href="https://www.linkedin.com/in/alan-joy-wilson" target="_blank" rel="noopener noreferrer" style={{ marginLeft: "5px", textDecoration: "underline", color: "var(--mm-gold-400)" }}>
+              Alan Joy Wilson
+            </a>
+          </div>
         </div>
       </div>
     </footer>

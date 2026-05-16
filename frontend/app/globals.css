@@ -653,14 +653,21 @@ a {
 
 .mm-product-card {
   background: #fff;
-  border-radius: 4px;
+  border-radius: 8px; /* Slightly rounder for modern feel */
   padding: 16px;
-  min-width: 220px;
-  max-width: 220px;
+  width: 100%;
   scroll-snap-align: start;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.mm-products-scroll .mm-product-card {
+  min-width: 240px;
+  max-width: 240px;
+  flex-shrink: 0;
 }
 
 .mm-product-card:hover {
@@ -870,37 +877,43 @@ a {
    ============================================ */
 
 .mm-footer {
-  background: var(--mm-header-secondary);
+  background: var(--mm-header-bg); /* Darker background like header */
   color: #fff;
-  margin-top: 40px;
+  margin-top: 60px;
+  border-top: 4px solid var(--mm-gold-400); /* Amazon-style accent bar */
 }
 
 .mm-footer-back-top {
   text-align: center;
-  background: var(--mm-header-hover);
-  padding: 14px;
+  background: var(--mm-header-secondary);
+  padding: 16px;
   cursor: pointer;
   font-size: 13px;
-  transition: background 0.15s;
+  font-weight: 600;
+  transition: background 0.2s;
+  color: #fff;
 }
 
 .mm-footer-back-top:hover {
-  background: #4a3660;
+  background: var(--mm-header-hover);
 }
 
 .mm-footer-main {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 40px;
-  padding: 40px 60px;
+  padding: 60px 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .mm-footer-col h4 {
   font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 14px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  color: #fff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .mm-footer-col ul {
@@ -910,33 +923,53 @@ a {
 }
 
 .mm-footer-col ul li {
-  font-size: 13px;
-  color: #ccc;
-  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ddd;
+  margin-bottom: 12px;
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color 0.15s, transform 0.15s;
 }
 
 .mm-footer-col ul li:hover {
+  color: var(--mm-gold-400);
+  transform: translateX(4px);
+}
+
+.mm-footer-socials {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.mm-footer-socials a {
   color: #fff;
-  text-decoration: underline;
+  transition: color 0.2s, transform 0.2s;
+  opacity: 0.8;
+}
+
+.mm-footer-socials a:hover {
+  color: var(--mm-gold-400);
+  transform: translateY(-3px);
+  opacity: 1;
 }
 
 .mm-footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--mm-header-bg);
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
 .mm-footer-logo {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .mm-footer-copyright {
-  font-size: 12px;
-  color: #999;
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.6;
 }
 
 /* ============================================
@@ -1658,8 +1691,20 @@ a {
   }
 
   .mm-footer-main {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    padding: 40px 20px;
+  }
+
+  .mm-footer-col h4 {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mm-footer-main {
     grid-template-columns: 1fr;
-    gap: 24px;
   }
 }
 
@@ -1753,13 +1798,16 @@ a {
   }
 
   .mm-product-card {
-    min-width: unset;
-    max-width: unset;
-    padding: 8px;
+    padding: 10px;
+  }
+
+  .mm-products-scroll .mm-product-card {
+    min-width: 190px;
+    max-width: 190px;
   }
 
   .mm-product-image {
-    height: 140px;
+    height: 160px;
   }
 
   .mm-product-title {
