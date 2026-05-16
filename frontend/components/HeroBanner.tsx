@@ -14,7 +14,7 @@ export default function HeroBanner({ banners = [] }: { banners?: Banner[] }) {
     title: b.title,
     subtitle: "",
     cta: "Shop Now",
-    link: b.link || "/",
+    link: b.link || "/search",
   }));
 
   const next = useCallback(() => {

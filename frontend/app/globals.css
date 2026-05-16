@@ -1672,7 +1672,8 @@ a {
   }
 
   .mm-hero-content .mm-hero-cta {
-    display: none;
+    display: inline-block; /* Show the button on mobile */
+    margin-top: 10px;
   }
 
   .mm-hero-cta {
