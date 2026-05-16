@@ -71,6 +71,7 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   background: var(--mm-bg-secondary);
   color: var(--mm-text-primary);
@@ -79,6 +80,8 @@ body {
   min-height: 100dvh; /* Use dynamic viewport height for mobile */
   overflow-x: hidden;
   overflow-y: auto;
+  width: 100%;
+  position: relative;
 }
 
 a {
@@ -1572,6 +1575,19 @@ a {
   .mm-subheader {
     height: 44px;
     background: #232f3e;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .mm-subheader::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .mm-subheader-item {
+    flex-shrink: 0;
   }
 
   .mm-categories-grid {
