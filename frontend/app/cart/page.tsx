@@ -85,7 +85,7 @@ export default function CartPage() {
       const { data } = await API.post("/payment/create-order");
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: data.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
         name: "Nexcart",
