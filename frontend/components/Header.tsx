@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import createAPI from "@/lib/api";
+import { useDebounce } from "@/lib/useDebounce";
 
 export default function Header() {
   const API = createAPI();
@@ -16,11 +17,15 @@ export default function Header() {
   const [cartCount, setCartCount] = useState(0);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const allMenuRef = useRef<HTMLDivElement>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -42,21 +47,30 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Fetch suggestions as user types (debounced)
+  // Fetch suggestions as user types (debounced hook)
   useEffect(() => {
-    if (searchQuery.trim().length > 1) {
-      const timer = setTimeout(() => {
-        API.get(`/products?q=${searchQuery}&limit=6`).then((res: any) => {
+    const query = debouncedSearchQuery.trim();
+    if (query.length > 1) {
+      setLoadingSuggestions(true);
+      const categoryParam = searchCategory !== "All" ? `&category=${searchCategory}` : "";
+      
+      API.get(`/products?q=${query}&limit=5${categoryParam}`)
+        .then((res: any) => {
           setSuggestions(res.data || []);
           setShowSuggestions(true);
-        }).catch(() => setSuggestions([]));
-      }, 300);
-      return () => clearTimeout(timer);
+        })
+        .catch(() => {
+          setSuggestions([]);
+        })
+        .finally(() => {
+          setLoadingSuggestions(false);
+        });
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
     }
-  }, [searchQuery]);
+    setActiveIndex(-1);
+  }, [debouncedSearchQuery, searchCategory]);
 
   const fetchCartCount = useCallback(() => {
     if (isAuthenticated) {
@@ -91,6 +105,47 @@ export default function Header() {
     
     setShowSuggestions(false);
     router.push(`/search?${params.toString()}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || (suggestions.length === 0 && !loadingSuggestions)) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1 < suggestions.length ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev - 1 >= 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < suggestions.length) {
+        e.preventDefault();
+        const selectedProduct = suggestions[activeIndex];
+        setSearchQuery(selectedProduct.name);
+        setShowSuggestions(false);
+        router.push(`/search?q=${encodeURIComponent(selectedProduct.name)}`);
+      }
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+      e.currentTarget.blur();
+    }
+  };
+
+  const highlightMatch = (text: string, query: string) => {
+    if (!query) return <span>{text}</span>;
+    const parts = text.split(new RegExp(`(${query})`, "gi"));
+    return (
+      <span>
+        {parts.map((part, i) =>
+          part.toLowerCase() === query.toLowerCase() ? (
+            <strong key={i} className="mm-suggestion-highlight">
+              {part}
+            </strong>
+          ) : (
+            part
+          )
+        )}
+      </span>
+    );
   };
 
   return (
@@ -182,8 +237,9 @@ export default function Header() {
               value={searchQuery}
               autoComplete="off"
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
               onFocus={() => {
-                if (suggestions.length > 0) setShowSuggestions(true);
+                if (suggestions.length > 0 || loadingSuggestions) setShowSuggestions(true);
               }}
             />
             <button className="mm-search-btn" type="submit" id="search-btn" aria-label="Search">
@@ -195,27 +251,51 @@ export default function Header() {
           </form>
 
           {/* Search Suggestions Dropdown */}
-          {showSuggestions && suggestions.length > 0 && (
+          {showSuggestions && (suggestions.length > 0 || loadingSuggestions) && (
             <div className="mm-search-suggestions">
-              {suggestions.map((product) => (
-                <div 
-                  key={product._id} 
-                  className="mm-suggestion-item"
-                  onClick={() => {
-                    setSearchQuery(product.name);
-                    setShowSuggestions(false);
-                    router.push(`/search?q=${product.name}`);
-                  }}
-                >
-                  <div className="mm-suggestion-img">
-                    <img src={product.images[0]} alt={product.name} />
-                  </div>
-                  <div className="mm-suggestion-info">
-                    <div className="mm-suggestion-name">{product.name}</div>
-                    <div className="mm-suggestion-cat">{product.category}</div>
-                  </div>
+              {loadingSuggestions ? (
+                <div className="mm-suggestions-skeleton">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="mm-skeleton-row">
+                      <div className="mm-skeleton-img"></div>
+                      <div className="mm-skeleton-info">
+                        <div className="mm-skeleton-line short"></div>
+                        <div className="mm-skeleton-line extra-short"></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : (
+                suggestions.map((product, index) => (
+                  <div 
+                    key={product._id} 
+                    className={`mm-suggestion-item ${index === activeIndex ? "active" : ""}`}
+                    onClick={() => {
+                      setSearchQuery(product.name);
+                      setShowSuggestions(false);
+                      router.push(`/search?q=${encodeURIComponent(product.name)}`);
+                    }}
+                    onMouseEnter={() => setActiveIndex(index)}
+                  >
+                    <div className="mm-suggestion-img">
+                      <img src={product.images[0]} alt={product.name} />
+                    </div>
+                    <div className="mm-suggestion-info">
+                      <div className="mm-suggestion-name">
+                        {highlightMatch(product.name, searchQuery)}
+                      </div>
+                      <div className="mm-suggestion-meta">
+                        <span className="mm-suggestion-cat">{product.category}</span>
+                        {product.price !== undefined && (
+                          <span className="mm-suggestion-price">
+                            ₹{product.price.toLocaleString("en-IN")}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
         </div>
