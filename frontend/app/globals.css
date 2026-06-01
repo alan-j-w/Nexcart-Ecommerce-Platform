@@ -1938,3 +1938,360 @@ a {
     font-size: 10px;
   }
 }
+
+/* ============================================
+   💳 SHOWCASE SANDBOX PAYMENT OVERLAY
+   ============================================ */
+
+.mm-payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 7, 24, 0.7); /* Deep dark purple-toned overlay */
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999; /* Ensure it is on top of everything! */
+  animation: mm-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mm-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.mm-payment-modal {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 20px;
+  width: 92%;
+  max-width: 460px;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(59, 7, 100, 0.2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: mm-scale-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes mm-scale-up {
+  from { transform: scale(0.95) translateY(10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.mm-payment-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 9999px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mm-text-secondary);
+  transition: all 0.2s;
+}
+
+.mm-payment-close:hover {
+  background: var(--mm-purple-100);
+  color: var(--mm-purple-700);
+}
+
+.mm-payment-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mm-payment-header h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--mm-purple-800);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.mm-payment-header p {
+  font-size: 12px;
+  color: var(--mm-text-secondary);
+  line-height: 1.4;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+/* 3D CREDIT CARD WRAPPER */
+.mm-3d-card-wrapper {
+  perspective: 1000px; /* Crucial for 3D depth effect */
+  width: 100%;
+  height: 200px;
+  margin: 10px 0;
+}
+
+.mm-3d-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 25px rgba(59, 7, 100, 0.15);
+  border-radius: 16px;
+}
+
+.mm-3d-card.flipped {
+  transform: rotateY(180deg);
+}
+
+.mm-card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden; /* Hide other face when turned */
+  border-radius: 16px;
+  padding: 24px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mm-card-front {
+  background: linear-gradient(135deg, var(--mm-purple-800) 0%, #1e1028 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mm-card-back {
+  background: linear-gradient(135deg, #1e1028 0%, var(--mm-purple-900) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotateY(180deg); /* Render turned back facing away */
+}
+
+/* FRONT CARD DESIGN ELEMENTS */
+.mm-card-chip {
+  width: 45px;
+  height: 35px;
+  background: linear-gradient(135deg, #ffd700 0%, #fcd34d 100%);
+  border-radius: 6px;
+  position: relative;
+}
+
+.mm-card-chip::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 4px;
+}
+
+.mm-card-network-logo {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.mm-card-number-display {
+  font-family: monospace;
+  font-size: 22px;
+  letter-spacing: 2px;
+  word-spacing: 4px;
+  margin: 20px 0 10px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.mm-card-meta-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mm-card-label {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.6);
+  display: block;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.mm-card-value {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 190px;
+  display: block;
+}
+
+/* BACK CARD DESIGN ELEMENTS */
+.mm-card-strip {
+  background: #111;
+  height: 40px;
+  width: calc(100% + 48px);
+  margin-left: -24px;
+  margin-top: 10px;
+}
+
+.mm-card-signature-bar {
+  background: #fff;
+  height: 38px;
+  border-radius: 4px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  color: #333;
+}
+
+.mm-card-signature-display {
+  font-family: 'Geist', cursive, sans-serif;
+  font-style: italic;
+  font-size: 14px;
+  user-select: none;
+}
+
+.mm-card-cvv-display {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.mm-card-info-text {
+  font-size: 8.5px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* PAYMENT FIELDS FORM */
+.mm-payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mm-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mm-form-group label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--mm-text-secondary);
+}
+
+.mm-form-group input {
+  padding: 12px 16px;
+  border: 1.5px solid var(--mm-bg-tertiary);
+  border-radius: 8px;
+  font-size: 14.5px;
+  outline: none;
+  transition: all 0.25s;
+}
+
+.mm-form-group input:focus {
+  border-color: var(--mm-purple-500);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+}
+
+.mm-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* PAYMENT SUCCESS COMPLETION SCREEN */
+.mm-payment-success-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 10px;
+  text-align: center;
+  gap: 14px;
+}
+
+.mm-payment-success-view h4 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--mm-success);
+}
+
+.mm-payment-success-view p {
+  font-size: 13.5px;
+  color: var(--mm-text-secondary);
+}
+
+.mm-success-checkmark-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 9999px;
+  border: 4px solid var(--mm-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: mm-pop-checkmark 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mm-success-checkmark {
+  width: 20px;
+  height: 40px;
+  border: solid var(--mm-success);
+  border-width: 0 4px 4px 0;
+  transform: rotate(45deg);
+  margin-bottom: 8px;
+  animation: mm-checkmark-draw 0.3s 0.2s ease forwards;
+  opacity: 0;
+}
+
+@keyframes mm-pop-checkmark {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes mm-checkmark-draw {
+  from { height: 0; width: 0; opacity: 0; }
+  to   { height: 35px; width: 18px; opacity: 1; }
+}
+
+/* Processing Button Spinner */
+.mm-btn-spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mm-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  border-top-color: #fff;
+  animation: mm-spin 0.8s infinite linear;
+}
+
+@keyframes mm-spin {
+  to { transform: rotate(360deg); }
+}

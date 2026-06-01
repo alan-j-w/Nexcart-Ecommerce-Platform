@@ -16,6 +16,16 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
+  // Showcase Sandbox mock payment states
+  const [showMockModal, setShowMockModal] = useState(false);
+  const [mockOrderData, setMockOrderData] = useState<any>(null);
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardName, setCardName] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [payingState, setPayingState] = useState<"idle" | "loading" | "success" | "error">("idle");
+
   useEffect(() => {
     if (!authLoading) {
       if (!isAuthenticated) {
@@ -74,15 +84,24 @@ export default function CartPage() {
   const handleCheckout = async () => {
     setProcessing(true);
     try {
-      // Guard: ensure Razorpay SDK is loaded
+      // Create order on backend (automatically detects credentials and fallbacks to mock if needed)
+      const { data } = await API.post("/payment/create-order");
+
+      if (data.isMockMode) {
+        // Toggle Showcase Mock Mode Payment simulation overlay
+        setMockOrderData(data);
+        setShowMockModal(true);
+        setPayingState("idle");
+        setProcessing(false);
+        return;
+      }
+
+      // Guard: ensure Razorpay SDK is loaded for real transaction
       if (typeof (window as any).Razorpay === "undefined") {
         alert("Payment gateway is not available. Please refresh the page and try again.");
         setProcessing(false);
         return;
       }
-
-      // Create Razorpay order on backend
-      const { data } = await API.post("/payment/create-order");
 
       const options = {
         key: data.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -132,6 +151,40 @@ export default function CartPage() {
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to initiate payment. Please try again.");
       setProcessing(false);
+    }
+  };
+
+  const handleMockPaymentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!cardNumber || !cardName || !cardExpiry || !cardCvv) {
+      alert("Please fill out all credit card fields.");
+      return;
+    }
+    setPayingState("loading");
+    try {
+      // Simulate verification delay for nice visual checkout feedback
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      await API.post("/payment/verify", {
+        razorpay_order_id: mockOrderData.orderId,
+        razorpay_payment_id: `mock_pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        razorpay_signature: "mock_signature_approved",
+        isMockMode: true,
+      });
+
+      setPayingState("success");
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      alert("✅ Showcase Payment successful! Your order has been placed.");
+      setShowMockModal(false);
+      
+      // Notify components to update cart counters
+      window.dispatchEvent(new Event("cartUpdated"));
+      router.push("/orders");
+    } catch (err: any) {
+      console.error(err);
+      setPayingState("error");
+      alert("❌ Payment verification failed. Please try again.");
     }
   };
 
@@ -285,6 +338,177 @@ export default function CartPage() {
           >
             {processing ? "Processing..." : "Proceed to Buy"}
           </button>
+        </div>
+      )}
+      {/* 💳 Showcase Interactive Sandbox Payment Modal Overlay */}
+      {showMockModal && mockOrderData && (
+        <div className="mm-payment-modal-overlay">
+          <div className="mm-payment-modal">
+            <button 
+              className="mm-payment-close" 
+              onClick={() => {
+                setShowMockModal(false);
+                setCardNumber("");
+                setCardName("");
+                setCardExpiry("");
+                setCardCvv("");
+                setIsFlipped(false);
+              }}
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            
+            <div className="mm-payment-header">
+              <h3>🔐 Nexcart Showcase Sandbox</h3>
+              <p>This is a 100% secure portfolio demonstration payment simulator. No real money will be charged.</p>
+            </div>
+
+            {/* 3D Interactive Card Preview */}
+            <div className="mm-3d-card-wrapper">
+              <div className={`mm-3d-card ${isFlipped ? "flipped" : ""}`}>
+                {/* Front Surface */}
+                <div className="mm-card-face mm-card-front">
+                  <div className="mm-card-chip"></div>
+                  <div className="mm-card-network-logo">VISA</div>
+                  <div className="mm-card-number-display">
+                    {cardNumber || "•••• •••• •••• ••••"}
+                  </div>
+                  <div className="mm-card-meta-display">
+                    <div className="mm-card-holder-col">
+                      <span className="mm-card-label">CARDHOLDER NAME</span>
+                      <span className="mm-card-value">
+                        {cardName.toUpperCase() || "YOUR NAME HERE"}
+                      </span>
+                    </div>
+                    <div className="mm-card-expiry-col">
+                      <span className="mm-card-label">EXPIRES</span>
+                      <span className="mm-card-value">{cardExpiry || "MM/YY"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Back Surface */}
+                <div className="mm-card-face mm-card-back">
+                  <div className="mm-card-strip"></div>
+                  <div className="mm-card-signature-bar">
+                    <span className="mm-card-signature-display">
+                      {cardName || "Authorized Signature"}
+                    </span>
+                    <span className="mm-card-cvv-display">{cardCvv || "•••"}</span>
+                  </div>
+                  <div className="mm-card-info-text">
+                    This sandbox card is for portfolio demonstration purposes only. Bypassing financial gateway hooks securely.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Fields Form */}
+            {payingState === "success" ? (
+              <div className="mm-payment-success-view">
+                <div className="mm-success-checkmark-circle">
+                  <div className="mm-success-checkmark"></div>
+                </div>
+                <h4>Payment Completed!</h4>
+                <p>Redirecting to your orders history page...</p>
+              </div>
+            ) : (
+              <form className="mm-payment-form" onSubmit={handleMockPaymentSubmit}>
+                <div className="mm-form-group">
+                  <label htmlFor="card-number">CARD NUMBER</label>
+                  <input
+                    id="card-number"
+                    type="text"
+                    placeholder="4111 2222 3333 4444"
+                    maxLength={19}
+                    value={cardNumber}
+                    required
+                    onChange={(e) => {
+                      // Auto format card space
+                      const v = e.target.value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+                      const matches = v.match(/\d{4,16}/g);
+                      const match = (matches && matches[0]) || "";
+                      const parts = [];
+                      for (let i = 0, len = match.length; i < len; i += 4) {
+                        parts.push(match.substring(i, i + 4));
+                      }
+                      if (parts.length > 0) {
+                        setCardNumber(parts.join(" "));
+                      } else {
+                        setCardNumber(v);
+                      }
+                    }}
+                  />
+                </div>
+
+                <div className="mm-form-group">
+                  <label htmlFor="card-name">CARDHOLDER NAME</label>
+                  <input
+                    id="card-name"
+                    type="text"
+                    placeholder="ALAN J"
+                    maxLength={26}
+                    value={cardName}
+                    required
+                    onChange={(e) => setCardName(e.target.value)}
+                  />
+                </div>
+
+                <div className="mm-form-row">
+                  <div className="mm-form-group">
+                    <label htmlFor="card-expiry">EXPIRY DATE</label>
+                    <input
+                      id="card-expiry"
+                      type="text"
+                      placeholder="MM/YY"
+                      maxLength={5}
+                      value={cardExpiry}
+                      required
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+                        if (v.length >= 2) {
+                          setCardExpiry(`${v.slice(0, 2)}/${v.slice(2, 4)}`);
+                        } else {
+                          setCardExpiry(v);
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="mm-form-group">
+                    <label htmlFor="card-cvv">CVV</label>
+                    <input
+                      id="card-cvv"
+                      type="password"
+                      placeholder="123"
+                      maxLength={3}
+                      value={cardCvv}
+                      required
+                      onFocus={() => setIsFlipped(true)}
+                      onBlur={() => setIsFlipped(false)}
+                      onChange={(e) => setCardCvv(e.target.value.replace(/[^0-9]/g, ""))}
+                    />
+                  </div>
+                </div>
+
+                <button 
+                  className="mm-btn-primary" 
+                  type="submit" 
+                  disabled={payingState === "loading"}
+                  style={{ marginTop: "12px" }}
+                >
+                  {payingState === "loading" ? (
+                    <span className="mm-btn-spinner-container">
+                      <span className="mm-btn-spinner"></span> Processing...
+                    </span>
+                  ) : (
+                    `Pay ₹${(subtotal).toLocaleString("en-IN")} securely`
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       )}
     </div>

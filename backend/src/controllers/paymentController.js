@@ -4,12 +4,8 @@ const Product = require("../models/Product");
 const Order = require("../models/Order");
 const crypto = require("crypto");
 
-// Create Order (Razorpay)
+// Create Order (Razorpay / Showcase Mock fallback)
 exports.createRazorpayOrder = async (req, res) => {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    return res.status(503).json({ message: "Payment service is currently unavailable" });
-  }
-
   try {
     const cart = await Cart.findOne({ user: req.user.id }).populate("items.product");
 
@@ -43,6 +39,17 @@ exports.createRazorpayOrder = async (req, res) => {
       return res.status(400).json({ message: "Invalid cart total. Please refresh and try again." });
     }
 
+    // Showcase fallback if credentials are blank
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      console.log("[Payment] Razorpay keys missing. Returning showcase mock order.");
+      return res.json({
+        isMockMode: true,
+        orderId: `mock_order_${Date.now()}_${crypto.randomBytes(4).toString("hex")}`,
+        amount: Math.round(total * 100),
+        currency: "INR"
+      });
+    }
+
     const options = {
       amount: Math.round(total * 100), // paise, must be an integer
       currency: "INR",
@@ -53,6 +60,7 @@ exports.createRazorpayOrder = async (req, res) => {
     const order = await razorpay.orders.create(options);
 
     res.json({
+      isMockMode: false,
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
@@ -60,33 +68,40 @@ exports.createRazorpayOrder = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("[Payment] Razorpay create-order error:", err);
+    console.error("[Payment] create-order error:", err);
     res.status(500).json({ error: "Failed to create payment order" });
   }
 };
 
 // Verify Payment & Final Order Fulfillment
 exports.verifyPayment = async (req, res) => {
-  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    return res.status(503).json({ message: "Payment service is currently unavailable" });
-  }
-
   try {
     const {
       razorpay_order_id,
       razorpay_payment_id,
-      razorpay_signature
+      razorpay_signature,
+      isMockMode
     } = req.body;
 
-    // 🔐 1. VERIFY SIGNATURE
-    const generatedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(razorpay_order_id + "|" + razorpay_payment_id)
-      .digest("hex");
+    const isMock = isMockMode || (razorpay_order_id && razorpay_order_id.startsWith("mock_order_"));
 
-    if (generatedSignature !== razorpay_signature) {
-      console.warn(`[Payment] Signature verification failed. Expected: ${generatedSignature}, Received: ${razorpay_signature}`);
-      return res.status(400).json({ message: "Invalid payment signature" });
+    if (isMock) {
+      console.log(`[Payment] Bypassing signature verification for Showcase Mock order: ${razorpay_order_id}`);
+    } else {
+      if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        return res.status(503).json({ message: "Payment service is currently unavailable" });
+      }
+
+      // 🔐 1. VERIFY SIGNATURE
+      const generatedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+        .update(razorpay_order_id + "|" + razorpay_payment_id)
+        .digest("hex");
+
+      if (generatedSignature !== razorpay_signature) {
+        console.warn(`[Payment] Signature verification failed. Expected: ${generatedSignature}, Received: ${razorpay_signature}`);
+        return res.status(400).json({ message: "Invalid payment signature" });
+      }
     }
 
     // 🛒 2. GET USER CART
