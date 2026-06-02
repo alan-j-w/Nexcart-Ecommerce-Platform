@@ -2295,3 +2295,135 @@ a {
 @keyframes mm-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ============================================
+   🔔 REAL-TIME NOTIFICATION TOASTS
+   ============================================ */
+.mm-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10000;
+  max-width: 380px;
+  width: 90%;
+  pointer-events: none; /* Let clicks pass through container */
+}
+
+.mm-realtime-toast {
+  pointer-events: auto; /* Re-enable clicks for actual toasts */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(59, 7, 100, 0.15);
+  animation: mm-toast-slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all 0.3s;
+}
+
+@keyframes mm-toast-slide-in {
+  from {
+    transform: translateY(20px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.mm-realtime-toast.new_order {
+  border-left: 5px solid var(--mm-gold-400);
+}
+
+.mm-realtime-toast.order_shipped {
+  border-left: 5px solid var(--mm-success);
+}
+
+.mm-toast-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.new_order .mm-toast-icon-box {
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--mm-gold-500);
+}
+
+.order_shipped .mm-toast-icon-box {
+  background: rgba(5, 150, 105, 0.15);
+  color: var(--mm-success);
+}
+
+.mm-toast-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.mm-toast-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--mm-text-primary);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mm-toast-msg {
+  font-size: 13px;
+  color: var(--mm-text-secondary);
+  line-height: 1.4;
+}
+
+.mm-toast-mute-btn {
+  background: transparent;
+  border: none;
+  color: var(--mm-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.mm-toast-mute-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--mm-text-primary);
+}
+
+.mm-toast-close {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mm-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  width: 24px;
+  height: 24px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.mm-toast-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--mm-error);
+}

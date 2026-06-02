@@ -70,6 +70,7 @@ app.use("/api/payment", require("./src/routes/paymentRoutes"));
 app.use("/api/banners", require("./src/routes/bannerRoutes"));
 app.use("/api/categories", require("./src/routes/categoryRoutes"));
 app.use("/api/wishlist", require("./src/routes/wishlistRoutes"));
+app.use("/api/notifications", require("./src/routes/notificationRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Multi-Vendor E-Commerce API running...");

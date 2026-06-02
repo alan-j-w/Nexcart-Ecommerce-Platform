@@ -146,8 +146,25 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ error: "Order not found" });
+    const oldStatus = order.status;
     order.status = req.body.status;
     await order.save();
+
+    // 🔔 REAL-TIME NOTIFICATION FOR CUSTOMER (ORDER SHIPPED)
+    if (req.body.status === "shipped") {
+      try {
+        const notificationService = require("../services/notificationService");
+        notificationService.sendNotification(
+          order.user,
+          "ORDER_SHIPPED",
+          `Your order #${order._id.toString().slice(-6)} has been shipped!`,
+          { orderId: order._id }
+        );
+      } catch (notifErr) {
+        console.error("[Notification Event Error]:", notifErr);
+      }
+    }
+
     res.json(order);
   } catch (err) {
     res.status(500).json({ error: err.message });

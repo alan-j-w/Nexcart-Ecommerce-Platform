@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "./webview.css";
 import { AuthProvider } from "@/lib/AuthContext";
+import { NotificationProvider } from "@/components/NotificationProvider";
 import ConditionalShell from "@/components/ConditionalShell";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import WebviewWarning from "@/components/WebviewWarning";
@@ -35,8 +36,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <GoogleOAuthProvider clientId={googleClientId}>
           <AuthProvider>
-            <WebviewWarning />
-            <ConditionalShell>{children}</ConditionalShell>
+            <NotificationProvider>
+              <WebviewWarning />
+              <ConditionalShell>{children}</ConditionalShell>
+            </NotificationProvider>
           </AuthProvider>
         </GoogleOAuthProvider>
       </body>

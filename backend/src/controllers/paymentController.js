@@ -163,6 +163,22 @@ exports.verifyPayment = async (req, res) => {
       paymentId: razorpay_payment_id
     });
 
+    // 🔔 REAL-TIME NOTIFICATION FOR VENDORS
+    try {
+      const notificationService = require("../services/notificationService");
+      const vendorsToNotify = [...new Set(orderItems.map(item => item.vendor?.toString()).filter(Boolean))];
+      vendorsToNotify.forEach(vendorId => {
+        notificationService.sendNotification(
+          vendorId,
+          "NEW_ORDER",
+          `You have received a new order #${order._id.toString().slice(-6)}!`,
+          { orderId: order._id }
+        );
+      });
+    } catch (notifErr) {
+      console.error("[Notification Event Error]:", notifErr);
+    }
+
     // 🧹 5. CLEAR CART
     cart.items = [];
     await cart.save();

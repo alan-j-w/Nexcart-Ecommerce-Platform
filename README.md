@@ -1,115 +1,148 @@
 # 🛒 Nexcart — Multi-Vendor E-Commerce Platform
 
-Nexcart is a modern full-stack multi-vendor e-commerce platform built with a scalable architecture using **Next.js (frontend)** and **Node.js/Express (backend)**. It focuses on real-world usability, clean UI, and production deployment practices.
+Nexcart is a full-stack, production-ready multi-vendor e-commerce platform designed to simulate real-world online marketplace operations. Built using **Next.js**, **Node.js**, **Express.js**, and **MongoDB**, the platform enables customers to browse and purchase products while providing vendors and administrators with powerful management tools.
+
+The project emphasizes scalability, secure authentication, payment integration, responsive design, and modern deployment practices.
 
 ---
 
-## ✨ Features
+## ✨ Key Features
 
-### 👤 Customer Experience
+### 👤 Customer Features
 
 * Browse products across multiple categories
-* Search and filter products dynamically
-* Secure checkout with Razorpay integration
-* Google OAuth login support
-* Fully responsive UI (mobile-first design)
+* Advanced product search and filtering
+* Product details with image galleries
+* Shopping cart and wishlist functionality
+* Secure checkout experience
+* Razorpay payment gateway integration
+* Google OAuth authentication
+* Responsive mobile-first user interface
 
 ---
 
-### 🏪 Vendor & Admin
+### 🏪 Vendor Features
 
-* Vendor dashboard for product management
-* Image upload & optimization using Cloudinary
-* Admin controls for:
-
-  * Categories
-  * Banners
-  * Vendors
-* Order tracking and management
+* Vendor dashboard
+* Product creation, editing, and deletion
+* Inventory management
+* Order monitoring and management
+* Earnings overview
 
 ---
 
-## 🧱 Tech Stack
+### 🛠️ Admin Features
+
+* Category management
+* Banner management
+* Vendor management
+* Product moderation
+* Platform-wide order tracking
+* User and marketplace administration
+
+---
+
+## 🧱 Technology Stack
 
 ### Frontend
 
 * Next.js (App Router)
 * TypeScript
-* CSS (custom styling)
+* React
+* Custom CSS
 
 ### Backend
 
-* Node.js + Express.js
-* MongoDB (Mongoose)
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
 
-### Integrations
+### Authentication & Security
 
+* JWT Authentication
 * Google OAuth 2.0
-* Razorpay (Payments)
-* Cloudinary (Media storage)
+* Helmet Security Middleware
+* Express Rate Limiting
+* CORS Protection
 
-### Deployment
+### Third-Party Integrations
 
-* Vercel → Frontend
-* Railway → Backend
+* Razorpay Payment Gateway
+* Cloudinary Media Storage
+* Nodemailer Email Services
 
 ---
 
-## 🏗️ Project Structure
+## 📂 Project Structure
 
-```
-/backend   → Express API (auth, products, orders)
-/frontend  → Next.js app (UI, client logic)
+```text
+Nexcart-Ecommerce-Platform
+│
+├── backend
+│   ├── routes
+│   ├── controllers
+│   ├── middleware
+│   ├── models
+│   └── config
+│
+├── frontend
+│   ├── app
+│   ├── components
+│   ├── lib
+│   └── public
+│
+└── README.md
 ```
 
 ---
 
 ## ⚙️ Environment Variables
 
-### Backend (`/backend/.env`)
+### Backend (`backend/.env`)
 
 ```env
 PORT=8080
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret
+
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 
 GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_secret
 
-RAZORPAY_KEY_ID=your_key
-RAZORPAY_KEY_SECRET=your_secret
+RAZORPAY_KEY_ID=your_razorpay_key
+RAZORPAY_KEY_SECRET=your_razorpay_secret
 
-CLOUDINARY_CLOUD_NAME=your_name
-CLOUDINARY_API_KEY=your_key
-CLOUDINARY_API_SECRET=your_secret
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-FRONTEND_URL=http://localhost:3000
+EMAIL_PASS=your_email_password
+
+FRONTEND_URL=https://your-frontend-domain.com
 ```
 
----
-
-### Frontend (`/frontend/.env`)
+### Frontend (`frontend/.env.local`)
 
 ```env
 NEXT_PUBLIC_API_URL=https://your-backend-url/api
+
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-NEXT_PUBLIC_RAZORPAY_KEY=your_key
+
+NEXT_PUBLIC_RAZORPAY_KEY=your_razorpay_key
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Local Development Setup
 
-### 1. Clone the repo
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/alan-j-w/Nexcart-Ecommerce-Platform.git
 cd Nexcart-Ecommerce-Platform
 ```
 
----
-
-### 2. Setup Backend
+### 2. Start Backend
 
 ```bash
 cd backend
@@ -117,9 +150,13 @@ npm install
 npm run dev
 ```
 
----
+Backend runs on:
 
-### 3. Setup Frontend
+```text
+http://localhost:8080
+```
+
+### 3. Start Frontend
 
 ```bash
 cd frontend
@@ -127,62 +164,108 @@ npm install
 npm run dev
 ```
 
----
+Frontend runs on:
 
-## 🌐 Deployment
-
-### Frontend (Vercel)
-
-* Set environment variables:
-
-  * `NEXT_PUBLIC_API_URL`
-  * `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
-  * `NEXT_PUBLIC_RAZORPAY_KEY`
-
----
-
-### Backend (Railway)
-
-* Add all backend `.env` variables
-* Ensure:
-
-```js
-app.set("trust proxy", 1);
-```
-
-* Enable CORS:
-
-```js
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
-}));
+```text
+http://localhost:3000
 ```
 
 ---
 
-## ⚠️ Known Production Considerations
+## 🌐 Production Deployment
 
-* API calls must run on the client (avoid server-side fetch issues in Next.js)
-* CORS must match the deployed frontend URL exactly
-* Google OAuth requires correct redirect URIs in Google Cloud Console
-* Railway deployments require proper `trust proxy` configuration
+### Frontend Deployment
+
+**Platform:** Vercel
+
+Required Environment Variables:
+
+```env
+NEXT_PUBLIC_API_URL
+NEXT_PUBLIC_GOOGLE_CLIENT_ID
+NEXT_PUBLIC_RAZORPAY_KEY
+```
 
 ---
 
-## 📌 Status
+### Backend Deployment
 
-🚧 Actively under development
-Core features are implemented and deployed, with ongoing improvements in authentication, performance, and stability.
+**Platform:** Render
+
+Required Environment Variables:
+
+```env
+MONGO_URI
+JWT_SECRET
+GOOGLE_CLIENT_ID
+RAZORPAY_KEY_ID
+RAZORPAY_KEY_SECRET
+CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET
+EMAIL_PASS
+FRONTEND_URL
+```
+
+Production backend includes:
+
+* Helmet security headers
+* Rate limiting
+* CORS protection
+* MongoDB Atlas connectivity
+* Cloudinary integration
+* Render deployment configuration
+
+---
+
+## 🔒 Security Features
+
+* JWT-based authentication
+* Google OAuth login
+* Protected admin routes
+* Protected vendor routes
+* Password hashing using bcrypt
+* Helmet security middleware
+* API request rate limiting
+* Environment-based secret management
+* Restricted CORS policy
+
+---
+
+## 📈 Current Status
+
+✅ Customer marketplace implemented
+
+✅ Vendor management implemented
+
+✅ Admin management implemented
+
+✅ Google OAuth authentication
+
+✅ Razorpay payment integration
+
+✅ Cloudinary image hosting
+
+✅ MongoDB Atlas database integration
+
+✅ Vercel frontend deployment
+
+✅ Render backend deployment
+
+🚀 Actively maintained and continuously improved
 
 ---
 
 ## 📄 License
 
-MIT License
+This project is licensed under the MIT License.
 
 ---
 
 ## 👨‍💻 Author
 
 **Alan Joy Wilson**
+
+Full Stack Developer | MERN Stack | Next.js | Node.js | MongoDB
+
+GitHub: https://github.com/alan-j-w
