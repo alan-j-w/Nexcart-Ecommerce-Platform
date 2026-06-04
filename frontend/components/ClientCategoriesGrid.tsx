@@ -18,7 +18,7 @@ export default function ClientCategoriesGrid() {
       try {
         setLoading(true);
         setError(false);
-        const data = await safeFetch(`${API_BASE_URL}/categories`, {}, 8000, 3, 1000);
+        const data = await safeFetch(`${API_BASE_URL}/categories`, {}, 60000, 3, 1000);
         if (active) {
           setCategories(data || []);
         }

@@ -21,8 +21,8 @@ export default function ClientFeaturedProducts() {
       try {
         setLoading(true);
         setError(false);
-        // timeout = 8000ms, retries = 3, initial delay = 1500ms
-        const data = await safeFetch(`${API_BASE_URL}/products`, {}, 8000, 3, 1500);
+        // timeout = 60000ms, retries = 3, initial delay = 1500ms
+        const data = await safeFetch(`${API_BASE_URL}/products`, {}, 60000, 3, 1500);
         if (active) {
           setProducts(data || []);
         }

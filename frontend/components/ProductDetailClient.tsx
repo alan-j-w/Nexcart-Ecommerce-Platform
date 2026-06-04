@@ -24,7 +24,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
         setNotFoundState(false);
         
         // Fetch all products client-side
-        const products: Product[] | null = await safeFetch(`${API_BASE_URL}/products`, {}, 8000, 3, 1500);
+        const products: Product[] | null = await safeFetch(`${API_BASE_URL}/products`, {}, 60000, 3, 1500);
         
         if (active) {
           if (!products) {

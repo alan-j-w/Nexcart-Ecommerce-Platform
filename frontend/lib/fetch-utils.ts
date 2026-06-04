@@ -9,7 +9,7 @@
 export async function safeFetch(
   url: string,
   options: RequestInit = {},
-  timeout = 8000,
+  timeout = 60000,
   retries = 3,
   delay = 1000
 ): Promise<any> {

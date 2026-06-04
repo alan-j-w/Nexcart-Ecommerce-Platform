@@ -31,7 +31,7 @@ export default function SearchPageClient({ query, category }: SearchPageClientPr
         if (category) params.append("category", category);
 
         const url = `${API_BASE_URL}/products?${params.toString()}`;
-        const data = await safeFetch(url, {}, 8000, 3, 1500);
+        const data = await safeFetch(url, {}, 60000, 3, 1500);
 
         if (active) {
           setProducts(data || []);

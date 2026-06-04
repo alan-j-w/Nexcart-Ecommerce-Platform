@@ -18,7 +18,7 @@ export default function ClientHeroBanner() {
       try {
         setLoading(true);
         setError(false);
-        const data = await safeFetch(`${API_BASE_URL}/banners/active`, {}, 8000, 3, 1000);
+        const data = await safeFetch(`${API_BASE_URL}/banners/active`, {}, 60000, 3, 1000);
         if (active) {
           setBanners(data || []);
         }

@@ -18,9 +18,9 @@ export default function Footer() {
         <div className="mm-footer-col">
           <h4>Get to Know Us</h4>
           <ul>
-            <li><Link href="/about">About Nexcart</Link></li>
-            <li><Link href="/careers">Careers</Link></li>
-            <li><Link href="/press">Press Releases</Link></li>
+            <li><Link href="#">About Nexcart</Link></li>
+            <li><Link href="#">Careers</Link></li>
+            <li><Link href="#">Press Releases</Link></li>
             <li>Nexcart Science</li>
           </ul>
         </div>
