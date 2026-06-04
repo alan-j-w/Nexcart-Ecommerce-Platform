@@ -59,6 +59,16 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "UP", message: "Nexcart API is healthy" });
 });
 
+// Production-ready Health Check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development"
+  });
+});
+
 
 // Routes
 app.use("/api/auth", require("./src/routes/authRoutes"));
