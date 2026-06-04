@@ -1,68 +1,23 @@
-import HeroBanner from "@/components/HeroBanner";
-import ProductCard from "@/components/ProductCard";
-import { Product, Banner, Category } from "@/lib/types";
 import Link from "next/link";
-import { API_BASE_URL } from "@/lib/constants";
-import { safeFetch, handleNextSafeFetch } from "@/lib/fetch-utils";
+import ClientHeroBanner from "@/components/ClientHeroBanner";
+import ClientCategoriesGrid from "@/components/ClientCategoriesGrid";
+import ClientFeaturedProducts from "@/components/ClientFeaturedProducts";
 
 export const metadata = {
   title: "Nexcart | Home of Premium Deals",
   description: "Shop the latest electronics, fashion, and home essentials on Nexcart.",
 };
 
-async function getHomeData() {
-  if (!API_BASE_URL) return { products: [], banners: [], categories: [], status: "error" };
-
-  // For homepage data, we use 60s revalidation for high performance
-  const fetchOptions = { next: { revalidate: 60 } };
-  
-  // We use handleNextSafeFetch to avoid swallowing Next.js build signals
-  const [products, banners, categories] = await Promise.all([
-    handleNextSafeFetch(safeFetch(`${API_BASE_URL}/products`, fetchOptions)),
-    handleNextSafeFetch(safeFetch(`${API_BASE_URL}/banners/active`, fetchOptions)),
-    handleNextSafeFetch(safeFetch(`${API_BASE_URL}/categories`, fetchOptions)),
-  ]);
-
-  if (!products || !banners || !categories) {
-    return { 
-      products: products || [], 
-      banners: banners || [], 
-      categories: categories || [], 
-      status: "error" 
-    };
-  }
-
-  return { 
-    products, 
-    banners, 
-    categories, 
-    status: products.length > 0 ? "success" : "empty" 
-  };
-}
-
-export default async function Home() {
-  const { products, banners, categories, status } = await getHomeData();
-
+export default function Home() {
   return (
     <>
-      <HeroBanner banners={banners} />
+      {/* Dynamic Hero Banner loaded client-side */}
+      <ClientHeroBanner />
 
-      <div className="mm-categories-grid">
-        {categories.map((cat: Category) => (
-          <Link href={`/search?category=${cat.slug}`} key={cat._id} style={{ textDecoration: "none" }} prefetch={false}>
-            <div className="mm-category-card">
-              <h3>{cat.name}</h3>
-              <div className="mm-category-card-image">
-                <img src={cat.imageUrl} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              </div>
-              <span style={{ color: "#6D28D9", fontSize: "13px", fontWeight: 600 }}>
-                Shop now →
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
+      {/* Dynamic Category Grid loaded client-side */}
+      <ClientCategoriesGrid />
 
+      {/* Static Deals Banner (SEO-safe layout content) */}
       <div className="mm-deals-banner">
         <div>
           <div className="mm-deals-title" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -75,31 +30,9 @@ export default async function Home() {
         </Link>
       </div>
 
-      <section className="mm-section">
-        <h2 className="mm-section-title">Featured Products</h2>
-        {status === "error" && (
-          <p style={{ color: "#DC2626", fontSize: "14px", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-              <path d="M12 9v4" />
-              <path d="M12 17h.01" />
-            </svg>
-            Service temporarily unavailable. Showing cached/partial results.
-          </p>
-        )}
-        <div className="mm-products-scroll">
-          {products.map((p: Product) => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-        </div>
-      </section>
-      
-      {status === "empty" && (
-        <div className="mm-empty">
-          <h3>No products yet</h3>
-          <Link href="/register" className="mm-btn-primary">Start Selling</Link>
-        </div>
-      )}
+      {/* Dynamic Featured Products loaded client-side */}
+      <ClientFeaturedProducts />
     </>
   );
 }
+
