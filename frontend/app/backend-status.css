@@ -1,0 +1,222 @@
+/* ============================================
+   BACKEND STATUS BANNER & MODAL OVERLAY
+   ============================================ */
+
+/* Floating Banner - Top Center */
+.mm-backend-banner {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  background: rgba(30, 16, 40, 0.85); /* Matches header dark bg with alpha */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 166, 35, 0.35); /* Gold accent border */
+  border-radius: 9999px; /* Pill shaped */
+  padding: 10px 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 15px rgba(245, 166, 35, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #FFFFFF;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  animation: mmSlideDownBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+  user-select: none;
+  max-width: 90%;
+  white-space: nowrap;
+}
+
+.mm-backend-banner-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--mm-gold-400, #FBBF24);
+  box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  animation: mmPulseGold 1.8s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes mmPulseGold {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.8);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(251, 191, 36, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes mmSlideDownBanner {
+  from {
+    transform: translate(-50%, -40px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Glassmorphism Blocking Overlay */
+.mm-backend-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7); /* Slate 900 background with transparency */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: mmFadeIn 0.3s ease;
+}
+
+.mm-backend-overlay-card {
+  background: #ffffff;
+  border-radius: 24px;
+  max-width: 480px;
+  width: 100%;
+  padding: 40px 36px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: mmScaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mmScaleUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.mm-backend-overlay-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, var(--mm-purple-100, #EDE9FE), #F5F3FF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--mm-purple-700, #6D28D9);
+  position: relative;
+}
+
+.mm-backend-overlay-spinner {
+  position: absolute;
+  inset: -4px;
+  border: 4px solid transparent;
+  border-top-color: var(--mm-purple-600, #7C3AED);
+  border-bottom-color: var(--mm-gold-400, #FBBF24);
+  border-radius: 50%;
+  animation: mmSpin 1.8s linear infinite;
+}
+
+@keyframes mmSpin {
+  to { transform: rotate(360deg); }
+}
+
+.mm-backend-overlay-card h2 {
+  font-size: 23px;
+  font-weight: 800;
+  color: var(--mm-purple-900, #3B0764);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.mm-backend-overlay-card p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--mm-text-secondary, #4B5563);
+  margin-bottom: 24px;
+}
+
+.mm-backend-progress-bg {
+  width: 100%;
+  height: 8px;
+  background: var(--mm-bg-secondary, #F3F4F6);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.mm-backend-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--mm-purple-600, #7C3AED) 0%, var(--mm-gold-400, #FBBF24) 100%);
+  border-radius: 9999px;
+  width: 0%;
+  transition: width 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.mm-backend-progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: mmProgressShimmer 1.5s infinite;
+}
+
+@keyframes mmProgressShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.mm-backend-dismiss-btn {
+  width: 100%;
+  border: 1px solid var(--mm-bg-tertiary, #E5E7EB);
+  background: transparent;
+  padding: 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mm-text-secondary, #4B5563);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mm-backend-dismiss-btn:hover {
+  background: var(--mm-bg-secondary, #F3F4F6);
+  color: var(--mm-text-primary, #111827);
+  border-color: #d1d5db;
+}
+
+/* Success Checkmark animation */
+.mm-backend-success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #DCFCE7;
+  color: #15803D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  animation: mmPopSuccess 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes mmPopSuccess {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}

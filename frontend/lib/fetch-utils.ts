@@ -1,3 +1,10 @@
+import { 
+  getBackendStatus, 
+  subscribeBackendStatus, 
+  incrementActiveRequests, 
+  decrementActiveRequests 
+} from "./backendStatus";
+
 /**
  * Production-grade fetch wrapper for Server & Client Components.
  * Includes:
@@ -13,6 +20,18 @@ export async function safeFetch(
   retries = 3,
   delay = 1000
 ): Promise<any> {
+  // If the server is sleeping, block the request here until it wakes up
+  if (getBackendStatus() === "sleeping") {
+    await new Promise<void>((resolve) => {
+      const unsubscribe = subscribeBackendStatus((status) => {
+        if (status === "online") {
+          unsubscribe();
+          resolve();
+        }
+      });
+    });
+  }
+
   let attempt = 0;
   
   while (attempt < retries) {
@@ -20,12 +39,14 @@ export async function safeFetch(
     const id = setTimeout(() => controller.abort(), timeout);
 
     try {
+      incrementActiveRequests();
       const response = await fetch(url, {
         ...options,
         signal: controller.signal,
       });
       
       clearTimeout(id);
+      decrementActiveRequests();
 
       if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
@@ -34,6 +55,7 @@ export async function safeFetch(
       return await response.json();
     } catch (error: any) {
       clearTimeout(id);
+      decrementActiveRequests();
       attempt++;
       
       const isTimeout = error.name === "AbortError" || error.message?.includes("timeout") || error.message?.includes("aborted");
@@ -57,6 +79,7 @@ export async function safeFetch(
     }
   }
 }
+
 
 /**
  * Next.js-safe catch handler.
