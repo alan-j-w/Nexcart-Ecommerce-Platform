@@ -216,6 +216,9 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
               <h1 className="mm-splash-logo-text">
                 Nex<span className="mm-splash-logo-accent">cart</span>
               </h1>
+              <p className="mm-splash-tagline">
+                Premium Brands • Exclusive Deals • Your Ultimate Shopping Experience
+              </p>
             </div>
 
             <div className="mm-splash-loader-wrapper">
@@ -225,6 +228,17 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
                   style={{ width: `${progress}%` }}
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="mm-splash-footer">
+            <div className="mm-splash-footer-brand">Nexcart</div>
+            <div className="mm-splash-footer-copyright">
+              © 2026 Nexcart. All rights reserved.
+            </div>
+            <div className="mm-splash-footer-dev">
+              Multi-Vendor E-Commerce Platform Developed By{" "}
+              <span className="mm-splash-dev-name">Alan Joy Wilson</span>
             </div>
           </div>
         </div>
