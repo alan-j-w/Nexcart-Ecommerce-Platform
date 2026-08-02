@@ -217,7 +217,7 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
                 Nex<span className="mm-splash-logo-accent">cart</span>
               </h1>
               <p className="mm-splash-tagline">
-                Premium Brands • Exclusive Deals • Your Ultimate Shopping Experience
+                ELEVATE YOUR SHOPPING EXPERIENCE
               </p>
             </div>
 
