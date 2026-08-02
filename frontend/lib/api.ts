@@ -28,15 +28,25 @@ const createAPI = () => {
   instance.interceptors.request.use(async (config: any) => {
     incrementActiveRequests();
 
-    // If the server is sleeping, block the request here until it wakes up
-    if (getBackendStatus() === "sleeping") {
+    // If the server is not online yet (checking or sleeping), wait max 15s
+    if (getBackendStatus() !== "online") {
       await new Promise<void>((resolve) => {
+        let resolved = false;
         const unsubscribe = subscribeBackendStatus((status) => {
-          if (status === "online") {
+          if (status === "online" && !resolved) {
+            resolved = true;
             unsubscribe();
             resolve();
           }
         });
+        // Safety timeout after 15s
+        setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            unsubscribe();
+            resolve();
+          }
+        }, 15000);
       });
     }
 

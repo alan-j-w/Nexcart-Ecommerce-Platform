@@ -16,25 +16,35 @@ import {
 export async function safeFetch(
   url: string,
   options: RequestInit = {},
-  timeout = 60000,
-  retries = 3,
-  delay = 1000
+  timeout = 8000,
+  retries = 2,
+  delay = 500
 ): Promise<any> {
-  // If the server is sleeping, block the request here until it wakes up
-  if (getBackendStatus() === "sleeping") {
+  // If backend status is checking or sleeping, wait briefly for it to turn online (max 15s)
+  if (getBackendStatus() !== "online") {
     await new Promise<void>((resolve) => {
+      let resolved = false;
       const unsubscribe = subscribeBackendStatus((status) => {
-        if (status === "online") {
+        if (status === "online" && !resolved) {
+          resolved = true;
           unsubscribe();
           resolve();
         }
       });
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          unsubscribe();
+          resolve();
+        }
+      }, 15000);
     });
   }
 
   let attempt = 0;
-  
+
   while (attempt < retries) {
+    attempt++;
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
 
@@ -43,41 +53,37 @@ export async function safeFetch(
       const response = await fetch(url, {
         ...options,
         signal: controller.signal,
-      });
-      
+      }).catch(() => null);
+
       clearTimeout(id);
       decrementActiveRequests();
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+      if (!response) {
+        if (attempt >= retries) return null;
+        await new Promise((res) => setTimeout(res, delay));
+        continue;
       }
 
-      return await response.json();
+      if (!response.ok) {
+        if (attempt >= retries) return null;
+        await new Promise((res) => setTimeout(res, delay));
+        continue;
+      }
+
+      const data = await response.json().catch(() => null);
+      return data;
     } catch (error: any) {
       clearTimeout(id);
       decrementActiveRequests();
-      attempt++;
-      
-      const isTimeout = error.name === "AbortError" || error.message?.includes("timeout") || error.message?.includes("aborted");
-      const errorMessage = isTimeout ? "Request timed out" : error.message || error;
-      
-      console.warn(
-        `[Fetch Warning] Attempt ${attempt} failed for ${url}. Error: ${errorMessage}. ${
-          attempt < retries ? `Retrying in ${delay * Math.pow(2, attempt - 1)}ms...` : "No more retries left."
-        }`
-      );
 
       if (attempt >= retries) {
-        if (isTimeout) {
-          throw new Error("Request timed out (Backend might be slow or down)");
-        }
-        throw error;
+        return null;
       }
-
-      // Wait for exponential backoff before the next attempt
-      await new Promise((resolve) => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
+      await new Promise((res) => setTimeout(res, delay));
     }
   }
+
+  return null;
 }
 
 

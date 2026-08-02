@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { API_BASE_URL } from "@/lib/constants";
 import {
   BackendStatus,
@@ -20,9 +20,10 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
   const [status, setStatusState] = useState<BackendStatus>("checking");
   const [activeRequests, setActiveRequests] = useState(0);
   const [progress, setProgress] = useState(0);
-  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
-  const [isOverlayDismissed, setIsOverlayDismissed] = useState(false);
-  const [showSuccessIcon, setShowSuccessIcon] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  const isInitialCheckDone = useRef(false);
 
   // 1. Subscribe to global state
   useEffect(() => {
@@ -32,11 +33,6 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
 
     const unsubRequests = subscribeActiveRequests((count) => {
       setActiveRequests(count);
-      // Reset overlay dismissed status when requests go to 0,
-      // so if they try a new request later it will show the modal again.
-      if (count === 0) {
-        setIsOverlayDismissed(false);
-      }
     });
 
     return () => {
@@ -45,14 +41,14 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
     };
   }, []);
 
-  // 2. Perform initial health check and handle polling if sleeping
+  // 2. Perform health check and handle polling
   useEffect(() => {
     let isMounted = true;
     let pollIntervalId: ReturnType<typeof setInterval> | null = null;
 
     const performHealthCheck = async () => {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
 
       try {
         const response = await fetch(`${API_BASE_URL}/health`, {
@@ -63,6 +59,9 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
 
         if (response.ok && isMounted) {
           setBackendStatus("online");
+          if (typeof window !== "undefined") {
+            sessionStorage.setItem("nexcart_backend_warm", "true");
+          }
         } else {
           throw new Error("Server not ready");
         }
@@ -72,6 +71,8 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
           setBackendStatus("sleeping");
           startPolling();
         }
+      } finally {
+        isInitialCheckDone.current = true;
       }
     };
 
@@ -83,6 +84,9 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
           const res = await fetch(`${API_BASE_URL}/health`, { cache: "no-store" });
           if (res.ok && isMounted) {
             setBackendStatus("online");
+            if (typeof window !== "undefined") {
+              sessionStorage.setItem("nexcart_backend_warm", "true");
+            }
             if (pollIntervalId) {
               clearInterval(pollIntervalId);
               pollIntervalId = null;
@@ -91,7 +95,7 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
         } catch (err) {
           // Keep polling
         }
-      }, 3000);
+      }, 2000);
     };
 
     performHealthCheck();
@@ -104,107 +108,124 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
     };
   }, []);
 
-  // 3. Progress bar animation when sleeping
+  // 3. Dynamic Backend-Responsive Splash Loading Screen
   useEffect(() => {
-    if (status === "sleeping") {
-      setProgress(0);
-      setShowSuccessIcon(false);
-      const duration = 45; // target 45 seconds
-      const timer = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 95) return 95; // hold at 95% until online
-          return prev + 100 / duration;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    } else if (status === "online") {
-      setProgress(100);
-      setShowSuccessIcon(true);
-      
-      // Delay closing/hiding of any overlays to show success animation
-      const timer = setTimeout(() => {
-        setShowSuccessIcon(false);
-      }, 1500);
-      return () => clearTimeout(timer);
+    let isMounted = true;
+
+    // Check if user is on a warm active session
+    const isWarmSession = typeof window !== "undefined" && sessionStorage.getItem("nexcart_backend_warm") === "true";
+
+    // If backend is already online and session is warm, skip splash screen on refresh!
+    if (status === "online" && isWarmSession && isInitialCheckDone.current) {
+      setShowSplash(false);
+      return;
     }
+
+    setShowSplash(true);
+    setIsFadingOut(false);
+
+    // Standard loading screen duration (10 seconds)
+    const STANDARD_DURATION = 10000;
+    const intervalTime = 100;
+    let currentStep = 0;
+    const totalSteps = STANDARD_DURATION / intervalTime;
+
+    const timer = setInterval(() => {
+      currentStep++;
+
+      // Condition: If backend responds online at any point, fast-forward to 100% and redirect immediately!
+      if (status === "online") {
+        clearInterval(timer);
+        if (isMounted) {
+          setProgress(100);
+          const fadeTimer = setTimeout(() => {
+            if (isMounted) setIsFadingOut(true);
+          }, 200);
+          const hideTimer = setTimeout(() => {
+            if (isMounted) setShowSplash(false);
+          }, 600);
+        }
+        return;
+      }
+
+      // Progress smoothly advances up to 95% over 10 seconds while waiting for backend
+      const calculatedProgress = Math.min(95, Math.round((currentStep / totalSteps) * 95));
+      if (isMounted) {
+        setProgress(calculatedProgress);
+      }
+
+      // Standard timeout reached (10s)
+      if (currentStep >= totalSteps) {
+        clearInterval(timer);
+        if (isMounted) {
+          setProgress(100);
+          setIsFadingOut(true);
+          setTimeout(() => {
+            if (isMounted) setShowSplash(false);
+          }, 500);
+        }
+      }
+    }, intervalTime);
+
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
   }, [status]);
 
-  // Determine if we should show the blocking overlay
-  const showOverlay =
-    (status === "sleeping" || (status === "checking" && activeRequests > 0)) &&
-    activeRequests > 0 &&
-    !isOverlayDismissed;
+  const handleDismissSplash = () => {
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setShowSplash(false);
+    }, 500);
+  };
 
   return (
     <BackendStatusContext.Provider value={{ status, activeRequests }}>
       {children}
 
-      {/* Floating Status Banner */}
-      {status === "sleeping" && !isBannerDismissed && (
-        <div className="mm-backend-banner">
-          <div className="mm-backend-banner-pulse" />
-          <span>🔌 Backend server sleeping. Waking up (takes ~45s). Browse UI while we connect...</span>
-          <button
-            onClick={() => setIsBannerDismissed(true)}
-            style={{
-              background: "none",
-              border: "none",
-              color: "rgba(255, 255, 255, 0.6)",
-              cursor: "pointer",
-              marginLeft: "12px",
-              fontSize: "16px",
-              fontWeight: 800,
-              padding: "0 4px",
-              lineHeight: 1,
-            }}
-            title="Dismiss banner"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      {/* Premium Full-Screen Splash Loading Screen */}
+      {showSplash && (
+        <div
+          className={`mm-splash-screen ${isFadingOut ? "mm-splash-fade-out" : ""}`}
+          onClick={handleDismissSplash}
+          title="Click to continue"
+        >
+          <div className="mm-splash-ambient-glow-1" />
+          <div className="mm-splash-ambient-glow-2" />
 
-      {/* Blocking Action Overlay */}
-      {showOverlay && (
-        <div className="mm-backend-overlay">
-          <div className="mm-backend-overlay-card">
-            {showSuccessIcon ? (
-              <div className="mm-backend-success-icon">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
+          <div className="mm-splash-content">
+            <div className="mm-splash-logo-container">
+              <div className="mm-splash-icon-wrapper">
+                <svg
+                  width="38"
+                  height="38"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mm-splash-cart-icon"
+                >
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                 </svg>
               </div>
-            ) : (
-              <div className="mm-backend-overlay-icon">
-                <div className="mm-backend-overlay-spinner" />
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                </svg>
-              </div>
-            )}
-
-            <h2>{showSuccessIcon ? "Server Connected!" : "Connecting to Server..."}</h2>
-            <p>
-              {showSuccessIcon
-                ? "The backend database & services are online. Resuming your request..."
-                : "This website is a showcase project hosted on a free Render server. To save resources, the server spins down during inactivity. It is currently warming up, which can take 30-50 seconds. Your action is paused and will complete automatically once online!"}
-            </p>
-
-            <div className="mm-backend-progress-bg">
-              <div
-                className="mm-backend-progress-bar"
-                style={{ width: `${progress}%` }}
-              />
+              <h1 className="mm-splash-logo-text">
+                Nex<span className="mm-splash-logo-accent">cart</span>
+              </h1>
             </div>
 
-            {!showSuccessIcon && (
-              <button
-                className="mm-backend-dismiss-btn"
-                onClick={() => setIsOverlayDismissed(true)}
-              >
-                Dismiss & Browse Offline
-              </button>
-            )}
+            <div className="mm-splash-loader-wrapper">
+              <div className="mm-splash-progress-track">
+                <div
+                  className="mm-splash-progress-fill"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -219,3 +240,4 @@ export function useBackendStatus() {
   }
   return context;
 }
+
