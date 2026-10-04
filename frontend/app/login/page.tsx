@@ -97,12 +97,13 @@ export default function LoginPage() {
 
         <GoogleSignInButton
           label="Sign in with Google"
-          onSuccess={(credential) => {
-            googleLogin(credential)
+          onSuccess={(idToken, accessToken) => {
+            googleLogin(idToken, accessToken)
               .then(() => router.push("/"))
               .catch((err: any) => {
                 console.error("Google Login Backend Error:", err);
-                setError("Google login failed. Please try a standard browser.");
+                const backendMsg = err.response?.data?.error || err.message;
+                setError(backendMsg || "Google login failed. Please try again.");
               });
           }}
           onError={(msg) => setError(msg)}

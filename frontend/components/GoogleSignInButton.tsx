@@ -1,70 +1,60 @@
-"use client";
+﻿"use client";
 
-import { useRef } from "react";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { useCallback } from "react";
+import { useGoogleLogin } from "@react-oauth/google";
 
 interface GoogleSignInButtonProps {
-  onSuccess: (credential: string) => void;
+  onSuccess: (idToken: string | null, accessToken?: string) => void;
   onError: (msg: string) => void;
   label?: string;
 }
 
 /**
- * Custom-styled Google Sign-In button.
- * A hidden GoogleLogin handles the real OAuth popup; our branded button triggers it.
- * FedCM is disabled for maximum browser compatibility.
+ * Custom-styled Google Sign-In button using the useGoogleLogin hook.
+ *
+ * Why useGoogleLogin instead of <GoogleLogin>:
+ * - <GoogleLogin> calls google.accounts.id.initialize() on every mount/re-render,
+ *   causing the "called multiple times" GSI_LOGGER warning when SSE re-renders the tree.
+ * - useGoogleLogin hook ONLY fires on click — zero SDK re-init side effects.
+ *
+ * Token strategy:
+ * - flow: "implicit" + openid scope -> Google returns id_token (JWT) + access_token
+ * - We send id_token as primary, access_token as fallback
+ * - Backend verifies id_token via google-auth-library, or calls /userinfo with access_token
  */
 export default function GoogleSignInButton({
   onSuccess,
   onError,
   label = "Sign in with Google",
 }: GoogleSignInButtonProps) {
-  const hiddenBtnRef = useRef<HTMLDivElement>(null);
+  const login = useGoogleLogin({
+    flow: "implicit",
+    scope: "openid email profile",
+    onSuccess: (tokenResponse) => {
+      const idToken = (tokenResponse as any).id_token ?? null;
+      const accessToken = tokenResponse.access_token;
+      onSuccess(idToken, accessToken);
+    },
+    onError: (error) => {
+      console.error("Google login error:", error);
+      onError("Google sign-in failed. Please try again or use a different browser.");
+    },
+    onNonOAuthError: (error) => {
+      if (error.type === "popup_closed") return;
+      onError("Google sign-in was blocked. Please allow popups for this site.");
+    },
+  });
 
-  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
-    if (credentialResponse.credential) {
-      onSuccess(credentialResponse.credential);
-    } else {
-      onError("Google sign-in failed: no credential returned.");
-    }
-  };
-
-  const handleGoogleError = () => {
-    onError("Google sign-in failed. Please try again or use a different browser.");
-  };
-
-  const triggerGoogleLogin = () => {
-    const btn = hiddenBtnRef.current?.querySelector<HTMLElement>("div[role=button], button");
-    if (btn) btn.click();
-  };
+  const handleClick = useCallback(() => {
+    login();
+  }, [login]);
 
   return (
     <div className="mm-google-custom-container">
-      {/* Hidden real Google button — provides the OAuth popup */}
-      <div
-        ref={hiddenBtnRef}
-        aria-hidden="true"
-        className="mm-google-hidden-trigger"
-        tabIndex={-1}
-      >
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={handleGoogleError}
-          use_fedcm_for_prompt={false}
-          ux_mode="popup"
-          theme="outline"
-          shape="rectangular"
-          size="large"
-          width="1"
-          auto_select={false}
-        />
-      </div>
-
-      {/* Our fully branded custom button */}
       <button
         type="button"
         className="mm-google-custom-btn"
-        onClick={triggerGoogleLogin}
+        onClick={handleClick}
         id="google-signin-btn"
       >
         <span className="mm-google-icon-circle" aria-hidden="true">

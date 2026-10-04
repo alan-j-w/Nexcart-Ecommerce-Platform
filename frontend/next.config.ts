@@ -15,6 +15,19 @@ const nextConfig: NextConfig = {
     // caused by the root-level package-lock.json in the monorepo parent folder.
     root: __dirname,
   },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin-allow-popups",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

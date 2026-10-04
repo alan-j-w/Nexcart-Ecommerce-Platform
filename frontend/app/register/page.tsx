@@ -158,12 +158,13 @@ export default function RegisterPage() {
 
         <GoogleSignInButton
           label="Sign up with Google"
-          onSuccess={(credential) => {
-            googleLogin(credential)
+          onSuccess={(idToken, accessToken) => {
+            googleLogin(idToken, accessToken)
               .then(() => router.push("/"))
               .catch((err: any) => {
                 console.error("Google Signup Backend Error:", err);
-                setError("Google signup failed. Please try a standard browser.");
+                const backendMsg = err.response?.data?.error || err.message;
+                setError(backendMsg || "Google signup failed. Please try again.");
               });
           }}
           onError={(msg) => setError(msg)}
