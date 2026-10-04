@@ -37,7 +37,7 @@ export async function safeFetch(
           unsubscribe();
           resolve();
         }
-      }, 15000);
+      }, 60000);
     });
   }
 

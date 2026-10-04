@@ -88,6 +88,7 @@ export interface Category {
   name: string;
   slug: string;
   imageUrl: string;
+  featuredProductImage?: string;
   createdAt?: string;
   updatedAt?: string;
 }

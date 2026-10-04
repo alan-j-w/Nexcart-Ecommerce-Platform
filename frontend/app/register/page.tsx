@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
-import { GoogleLogin } from "@react-oauth/google";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 export default function RegisterPage() {
   const { register, googleLogin } = useAuth();
@@ -122,8 +122,8 @@ export default function RegisterPage() {
             value={role}
             onChange={(e) => setRole(e.target.value)}
           >
-            <option value="customer">🛒 Shop on Nexcart</option>
-            <option value="vendor">🏪 Sell on Nexcart</option>
+            <option value="customer">Shop on Nexcart</option>
+            <option value="vendor">Sell on Nexcart</option>
           </select>
 
           {role === "vendor" && (
@@ -137,7 +137,7 @@ export default function RegisterPage() {
                 marginTop: "10px",
               }}
             >
-              ⚠️ Vendor accounts require admin approval before you can start selling.
+              Vendor accounts require admin approval before you can start selling.
             </p>
           )}
 
@@ -151,32 +151,23 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <div style={{ margin: "20px 0", textAlign: "center", position: "relative" }}>
-          <hr style={{ border: "0", borderTop: "1px solid #E5E7EB" }} />
-          <span style={{ position: "absolute", top: "-10px", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 10px", fontSize: "12px", color: "#6B7280" }}>OR</span>
+        <div className="mm-auth-or-divider">
+          <hr />
+          <span>OR</span>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              if (credentialResponse.credential) {
-                googleLogin(credentialResponse.credential)
-                  .then(() => router.push("/"))
-                  .catch((err: any) => {
-                    console.error("Google Signup Backend Error:", err);
-                    setError("Google signup failed. Please try a standard browser.");
-                  });
-              }
-            }}
-            onError={() => {
-              setError("Google signup failed. This browser might be restricted.");
-            }}
-            use_fedcm_for_prompt={true}
-            ux_mode="popup"
-            theme="filled_blue"
-            shape="pill"
-          />
-        </div>
+        <GoogleSignInButton
+          label="Sign up with Google"
+          onSuccess={(credential) => {
+            googleLogin(credential)
+              .then(() => router.push("/"))
+              .catch((err: any) => {
+                console.error("Google Signup Backend Error:", err);
+                setError("Google signup failed. Please try a standard browser.");
+              });
+          }}
+          onError={(msg) => setError(msg)}
+        />
 
         <p style={{ fontSize: "12px", color: "#6B7280", marginTop: "16px" }}>
           By creating an account, you agree to Nexcart&apos;s Conditions of Use and Privacy Notice.

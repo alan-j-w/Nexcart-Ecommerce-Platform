@@ -1,5 +1,4 @@
-// lib/constants.ts
-let rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+let rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 // 1. Strip accidental "NEXT_PUBLIC_API_URL=" if copy-pasted into Vercel's value field
 rawApiUrl = rawApiUrl.replace(/^NEXT_PUBLIC_API_URL=/, "");

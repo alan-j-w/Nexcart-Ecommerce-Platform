@@ -241,6 +241,25 @@ export default function AdminBanners() {
                   <span><strong>Size:</strong> {fileStats.size}</span>
                 </p>
               )}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "#F5F3FF",
+                border: "1px solid #DDD6FE",
+                borderRadius: "8px",
+                padding: "8px 12px",
+                marginTop: "8px",
+                fontSize: "12px",
+                color: "#5B21B6",
+                lineHeight: 1.4
+              }}>
+                <span style={{ fontSize: "16px" }}>📐</span>
+                <div>
+                  <strong>Recommended Ratio: 16:9 or Wide Banner (e.g. 1920×600px or 1280×720px)</strong>
+                  <div style={{ fontSize: "11px", color: "#6D28D9" }}>High-resolution wide horizontal images fit the homepage carousel best.</div>
+                </div>
+              </div>
             </div>
             {image && (
               <div style={{ marginBottom: "16px", border: "2px solid #E5E7EB", padding: "4px", borderRadius: "12px" }}>

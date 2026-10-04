@@ -10,11 +10,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    // serverActions: false, // User requested to disable, but in Next 15+ they are standard. 
-    // We'll keep it commented or omit to avoid errors if the version is incompatible, 
-    // but the following is the most important for build-safety:
-  }
+  turbopack: {
+    // Explicitly set root to this directory to avoid the "multiple lockfiles" warning
+    // caused by the root-level package-lock.json in the monorepo parent folder.
+    root: __dirname,
+  },
 };
 
 export default nextConfig;

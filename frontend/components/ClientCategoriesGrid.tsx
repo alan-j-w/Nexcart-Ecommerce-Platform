@@ -64,7 +64,11 @@ export default function ClientCategoriesGrid() {
           <div className="mm-category-card">
             <h3>{cat.name}</h3>
             <div className="mm-category-card-image">
-              <img src={cat.imageUrl} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img
+                src={cat.imageUrl}
+                alt={cat.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
             </div>
             <span style={{ color: "#6D28D9", fontSize: "13px", fontWeight: 600 }}>
               Shop now →

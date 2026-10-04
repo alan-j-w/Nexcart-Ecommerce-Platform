@@ -51,6 +51,25 @@ function MultiImageUpload({ images, onChange, max = 6 }: { images: string[]; onC
         </label>
       )}
       {images.length > 0 && <p style={{ fontSize: "11px", color: "#94A3B8", marginTop: "4px" }}>{images.length}/{max} · First is the main image</p>}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        background: "#F5F3FF",
+        border: "1px solid #DDD6FE",
+        borderRadius: "8px",
+        padding: "8px 12px",
+        marginTop: "8px",
+        fontSize: "12px",
+        color: "#5B21B6",
+        lineHeight: 1.4
+      }}>
+        <span style={{ fontSize: "16px" }}>📐</span>
+        <div>
+          <strong>Recommended Ratio: 1:1 Square (e.g. 1000×1000px or 800×800px)</strong>
+          <div style={{ fontSize: "11px", color: "#6D28D9" }}>Square photos with a clean or white background match the product cards best.</div>
+        </div>
+      </div>
     </div>
   );
 }

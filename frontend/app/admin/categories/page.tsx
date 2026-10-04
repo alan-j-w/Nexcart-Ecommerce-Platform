@@ -178,7 +178,7 @@ export default function AdminCategories() {
               image={imageSrc}
               crop={crop}
               zoom={zoom}
-              aspect={1} // 1:1 for category icons/images
+              aspect={16 / 9} // 16:9 standard for homepage category cards
               onCropChange={setCrop}
               onCropComplete={onCropComplete}
               onZoomChange={setZoom}
@@ -187,14 +187,14 @@ export default function AdminCategories() {
             <div style={{
               position: "absolute", top: "50%", left: "50%",
               transform: "translate(-50%, -50%)",
-              width: "80%", height: "80%",
+              width: "90%", height: "90%",
               border: "2px dashed rgba(255, 255, 255, 0.7)",
               pointerEvents: "none",
               display: "flex", alignItems: "center", justifyContent: "center",
-              borderRadius: "50%" // Suggest circular usage mostly for categories if needed
+              borderRadius: "8px"
             }}>
               <span style={{ color: "rgba(255, 255, 255, 0.5)", fontWeight: 700, textShadow: "0px 1px 2px #000" }}>
-                SAFE AREA
+                16:9 CARD SAFE AREA
               </span>
             </div>
           </div>
@@ -254,10 +254,29 @@ export default function AdminCategories() {
                   <span><strong>Size:</strong> {fileStats.size}</span>
                 </p>
               )}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                background: "#F5F3FF",
+                border: "1px solid #DDD6FE",
+                borderRadius: "8px",
+                padding: "8px 12px",
+                marginTop: "8px",
+                fontSize: "12px",
+                color: "#5B21B6",
+                lineHeight: 1.4
+              }}>
+                <span style={{ fontSize: "16px" }}>📐</span>
+                <div>
+                  <strong>Recommended Ratio: 16:9 Landscape (e.g. 1280×720px or 800×450px)</strong>
+                  <div style={{ fontSize: "11px", color: "#6D28D9" }}>High-resolution horizontal images fit the homepage category cards edge-to-edge.</div>
+                </div>
+              </div>
             </div>
             {image && (
               <div style={{ marginBottom: "16px", border: "2px solid #E5E7EB", padding: "4px", borderRadius: "12px" }}>
-                <img src={image} alt="Preview" style={{ width: "100%", borderRadius: "8px", objectFit: "cover", aspectRatio: "1/1" }} />
+                <img src={image} alt="Preview" style={{ width: "100%", borderRadius: "8px", objectFit: "cover", aspectRatio: "16/9" }} />
               </div>
             )}
             

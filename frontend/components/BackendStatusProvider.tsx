@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { API_BASE_URL } from "@/lib/constants";
 import {
   BackendStatus,
@@ -14,18 +21,29 @@ interface BackendStatusContextType {
   activeRequests: number;
 }
 
-const BackendStatusContext = createContext<BackendStatusContextType | undefined>(undefined);
+const BackendStatusContext = createContext<BackendStatusContextType | undefined>(
+  undefined
+);
 
-export function BackendStatusProvider({ children }: { children: React.ReactNode }) {
+export function BackendStatusProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [status, setStatusState] = useState<BackendStatus>("checking");
   const [activeRequests, setActiveRequests] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showSplash, setShowSplash] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("Connecting to Nexcart services...");
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
+  const mountTimeRef = useRef<number>(Date.now());
   const isInitialCheckDone = useRef(false);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 1. Subscribe to global state
+  // 1. Subscribe to global status & active requests
   useEffect(() => {
     const unsubStatus = subscribeBackendStatus((newStatus) => {
       setStatusState(newStatus);
@@ -41,143 +59,144 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
     };
   }, []);
 
-  // 2. Perform health check and handle polling
-  useEffect(() => {
-    let isMounted = true;
-    let pollIntervalId: ReturnType<typeof setInterval> | null = null;
+  // 2. Health check and polling logic
+  const startPolling = useCallback(() => {
+    if (pollIntervalRef.current) return;
 
-    const performHealthCheck = async () => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
-
+    pollIntervalRef.current = setInterval(async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/health`, {
-          signal: controller.signal,
-          cache: "no-store",
-        });
-        clearTimeout(timeoutId);
-
-        if (response.ok && isMounted) {
+        const res = await fetch(`${API_BASE_URL}/health`, { cache: "no-store" });
+        if (res.ok) {
           setBackendStatus("online");
           if (typeof window !== "undefined") {
             sessionStorage.setItem("nexcart_backend_warm", "true");
           }
-        } else {
-          throw new Error("Server not ready");
-        }
-      } catch (err) {
-        clearTimeout(timeoutId);
-        if (isMounted) {
-          setBackendStatus("sleeping");
-          startPolling();
-        }
-      } finally {
-        isInitialCheckDone.current = true;
-      }
-    };
-
-    const startPolling = () => {
-      if (pollIntervalId) return;
-
-      pollIntervalId = setInterval(async () => {
-        try {
-          const res = await fetch(`${API_BASE_URL}/health`, { cache: "no-store" });
-          if (res.ok && isMounted) {
-            setBackendStatus("online");
-            if (typeof window !== "undefined") {
-              sessionStorage.setItem("nexcart_backend_warm", "true");
-            }
-            if (pollIntervalId) {
-              clearInterval(pollIntervalId);
-              pollIntervalId = null;
-            }
+          if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
           }
-        } catch (err) {
-          // Keep polling
         }
-      }, 2000);
-    };
+      } catch {
+        // Render free-tier cold start in progress — continue polling
+      }
+    }, 2500);
+  }, []);
 
+  const performHealthCheck = useCallback(async () => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        signal: controller.signal,
+        cache: "no-store",
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        setBackendStatus("online");
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("nexcart_backend_warm", "true");
+        }
+        if (pollIntervalRef.current) {
+          clearInterval(pollIntervalRef.current);
+          pollIntervalRef.current = null;
+        }
+      } else {
+        throw new Error("Server not ready");
+      }
+    } catch {
+      clearTimeout(timeoutId);
+      setBackendStatus("sleeping");
+      startPolling();
+    } finally {
+      isInitialCheckDone.current = true;
+      setIsRetrying(false);
+    }
+  }, [startPolling]);
+
+  // Initial check on mount
+  useEffect(() => {
+    mountTimeRef.current = Date.now();
     performHealthCheck();
 
     return () => {
-      isMounted = false;
-      if (pollIntervalId) {
-        clearInterval(pollIntervalId);
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
       }
     };
-  }, []);
+  }, [performHealthCheck]);
 
-  // 3. Dynamic Backend-Responsive Splash Loading Screen
+  // 3. Splash Loading Screen Lifecycle
   useEffect(() => {
-    let isMounted = true;
+    const isWarmSession =
+      typeof window !== "undefined" &&
+      sessionStorage.getItem("nexcart_backend_warm") === "true";
 
-    // Check if user is on a warm active session
-    const isWarmSession = typeof window !== "undefined" && sessionStorage.getItem("nexcart_backend_warm") === "true";
-
-    // If backend is already online and session is warm, skip splash screen on refresh!
+    // If backend is already online and this session was previously warmed up, skip splash
     if (status === "online" && isWarmSession && isInitialCheckDone.current) {
       setShowSplash(false);
       return;
     }
 
     setShowSplash(true);
-    setIsFadingOut(false);
-
-    // Standard loading screen duration (10 seconds)
-    const STANDARD_DURATION = 10000;
-    const intervalTime = 100;
-    let currentStep = 0;
-    const totalSteps = STANDARD_DURATION / intervalTime;
 
     const timer = setInterval(() => {
-      currentStep++;
+      const elapsed = Math.floor((Date.now() - mountTimeRef.current) / 1000);
+      setElapsedSeconds(elapsed);
 
-      // Condition: If backend responds online at any point, fast-forward to 100% and redirect immediately!
-      if (status === "online") {
-        clearInterval(timer);
-        if (isMounted) {
-          setProgress(100);
-          const fadeTimer = setTimeout(() => {
-            if (isMounted) setIsFadingOut(true);
-          }, 200);
-          const hideTimer = setTimeout(() => {
-            if (isMounted) setShowSplash(false);
-          }, 600);
+      if (status !== "online") {
+        // Smooth asymptotic progress advance towards 90% while server spins up
+        setProgress((prev) => {
+          if (prev >= 90) return prev;
+          const delta = Math.max(0.2, (90 - prev) * 0.035);
+          return Math.min(90, +(prev + delta).toFixed(1));
+        });
+
+        // Informative, friendly status messages for Render free tier cold starts
+        if (elapsed < 3) {
+          setStatusMessage("Connecting to Nexcart services...");
+        } else if (elapsed < 14) {
+          setStatusMessage("Waking up cloud server (Render free tier spin-up)...");
+        } else if (elapsed < 30) {
+          setStatusMessage("Almost there! Initializing database & catalog...");
+        } else if (elapsed < 55) {
+          setStatusMessage("Cloud server finishing boot sequence...");
+        } else {
+          setStatusMessage("Server is taking longer than usual to wake up.");
         }
-        return;
-      }
-
-      // Progress smoothly advances up to 95% over 10 seconds while waiting for backend
-      const calculatedProgress = Math.min(95, Math.round((currentStep / totalSteps) * 95));
-      if (isMounted) {
-        setProgress(calculatedProgress);
-      }
-
-      // Standard timeout reached (10s)
-      if (currentStep >= totalSteps) {
+      } else {
+        // Backend is ONLINE!
+        setStatusMessage("Server connected! Loading storefront...");
+        setProgress(100);
         clearInterval(timer);
-        if (isMounted) {
-          setProgress(100);
+
+        // Ensure a minimum splash display duration (1200ms) for smooth visual feel
+        const totalElapsedMs = Date.now() - mountTimeRef.current;
+        const remainingMinTime = Math.max(0, 1200 - totalElapsedMs);
+
+        const fadeOutTimer = setTimeout(() => {
           setIsFadingOut(true);
-          setTimeout(() => {
-            if (isMounted) setShowSplash(false);
+          const hideTimer = setTimeout(() => {
+            setShowSplash(false);
           }, 500);
-        }
+          return () => clearTimeout(hideTimer);
+        }, remainingMinTime + 300);
+
+        return () => clearTimeout(fadeOutTimer);
       }
-    }, intervalTime);
+    }, 100);
 
     return () => {
-      isMounted = false;
       clearInterval(timer);
     };
   }, [status]);
 
-  const handleDismissSplash = () => {
-    setIsFadingOut(true);
-    setTimeout(() => {
-      setShowSplash(false);
-    }, 500);
+  const handleManualRetry = () => {
+    setIsRetrying(true);
+    setStatusMessage("Retrying connection to cloud server...");
+    performHealthCheck();
   };
 
   return (
@@ -188,8 +207,6 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
       {showSplash && (
         <div
           className={`mm-splash-screen ${isFadingOut ? "mm-splash-fade-out" : ""}`}
-          onClick={handleDismissSplash}
-          title="Click to continue"
         >
           <div className="mm-splash-ambient-glow-1" />
           <div className="mm-splash-ambient-glow-2" />
@@ -228,6 +245,24 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
                   style={{ width: `${progress}%` }}
                 />
               </div>
+
+              {/* Live status text & pulse indicator */}
+              <div className="mm-splash-status-message">
+                <span className={`mm-splash-status-dot ${status}`} />
+                <span>{statusMessage}</span>
+              </div>
+
+              {/* Fallback retry if Render cold start takes longer than 55s */}
+              {elapsedSeconds >= 55 && status !== "online" && (
+                <button
+                  type="button"
+                  onClick={handleManualRetry}
+                  disabled={isRetrying}
+                  className="mm-splash-retry-btn"
+                >
+                  {isRetrying ? "Checking..." : "Retry Connection"}
+                </button>
+              )}
             </div>
           </div>
 
@@ -250,8 +285,9 @@ export function BackendStatusProvider({ children }: { children: React.ReactNode 
 export function useBackendStatus() {
   const context = useContext(BackendStatusContext);
   if (!context) {
-    throw new Error("useBackendStatus must be used within a BackendStatusProvider");
+    throw new Error(
+      "useBackendStatus must be used within a BackendStatusProvider"
+    );
   }
   return context;
 }
-
