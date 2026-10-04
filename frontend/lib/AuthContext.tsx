@@ -63,7 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const googleLogin = useCallback(async (idToken: string | null, accessToken?: string) => {
-    const res = await API.post("/auth/google-login", { idToken, accessToken });
+    const res = await API.post("/auth/google-login", {
+      idToken: idToken || undefined,
+      credential: idToken || undefined,
+      accessToken: accessToken || undefined,
+    });
     const { token: jwt, user: userData } = res.data;
     localStorage.setItem("token", jwt);
     setToken(jwt);
