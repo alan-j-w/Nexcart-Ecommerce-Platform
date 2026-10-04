@@ -1203,23 +1203,35 @@ a {
   text-transform: uppercase;
 }
 
-/* ---- Custom Google Sign-In Button ---- */
+/* ---- Google Login / Sign-Up Button ---- */
 
-.mm-google-custom-container {
+.mm-google-login-wrapper {
   width: 100%;
-  position: relative;
-  margin-bottom: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.mm-google-hidden-trigger {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
+.mm-google-login-wrapper:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.mm-google-login-wrapper > div {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.mm-google-login-wrapper iframe {
+  margin: 0 auto !important;
+  max-width: 100% !important;
+  border-radius: 8px !important;
 }
 
 .mm-google-custom-btn {
