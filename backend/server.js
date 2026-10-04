@@ -5,9 +5,11 @@ const connectDB = require("./src/config/db");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
+const path = require("path");
 
-// Load environment variables
+// Load environment variables (checks current directory then parent directory)
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // Connect to Database
 connectDB();

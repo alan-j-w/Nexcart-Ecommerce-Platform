@@ -30,38 +30,69 @@ exports.register = async (req, res) => {
 // Google Login POST handler (called by frontend)
 exports.googleLogin = async (req, res) => {
   const { OAuth2Client } = require("google-auth-library");
-  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-  
-  try {
-    const { idToken, credential } = req.body;
-    const tokenToVerify = idToken || credential;
+  const clientId = (process.env.GOOGLE_CLIENT_ID || "").trim();
+  const client = new OAuth2Client(clientId);
 
-    if (!tokenToVerify) {
-      return res.status(400).json({ error: "Token is required (idToken or credential)" });
+  try {
+    const { idToken, credential, accessToken } = req.body;
+    let rawIdToken = typeof idToken === "string" ? idToken.trim() : (typeof credential === "string" ? credential.trim() : "");
+    if (rawIdToken === "null" || rawIdToken === "undefined") {
+      rawIdToken = "";
+    }
+    const rawAccessToken = typeof accessToken === "string" && accessToken !== "null" && accessToken !== "undefined" ? accessToken.trim() : "";
+
+    if (!rawIdToken && !rawAccessToken) {
+      return res.status(400).json({ error: "No authentication token provided" });
     }
 
-    if (!process.env.GOOGLE_CLIENT_ID) {
+    if (!clientId) {
       console.error("GOOGLE_CLIENT_ID is missing in environment variables");
       return res.status(500).json({ error: "Server configuration error: missing Google Client ID" });
     }
 
-    let ticket;
-    try {
-      ticket = await client.verifyIdToken({
-        idToken: tokenToVerify,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-    } catch (verifyError) {
-      console.error("Google Token Verification Failed:", verifyError.message);
-      return res.status(400).json({ error: "Invalid Google token: " + verifyError.message });
+    let email = null;
+    let name = null;
+
+    // 1. Try verifying ID token first if present
+    if (rawIdToken) {
+      try {
+        const ticket = await client.verifyIdToken({
+          idToken: rawIdToken,
+          audience: clientId,
+        });
+        const payload = ticket.getPayload();
+        if (payload && payload.email) {
+          email = payload.email;
+          name = payload.name;
+        }
+      } catch (verifyError) {
+        console.warn("ID Token verification failed, trying accessToken fallback:", verifyError.message);
+      }
     }
 
-    const payload = ticket.getPayload();
-    if (!payload) {
-      return res.status(400).json({ error: "Invalid Google token payload" });
+    // 2. If ID token was not present or failed, try access token via Google userinfo
+    if (!email && rawAccessToken) {
+      try {
+        const response = await fetch(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          { headers: { Authorization: `Bearer ${rawAccessToken}` } }
+        );
+        if (response.ok) {
+          const userInfo = await response.json();
+          email = userInfo.email;
+          name = userInfo.name || (userInfo.email ? userInfo.email.split("@")[0] : "Google User");
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          console.warn("Google userinfo failed with status", response.status, errData);
+        }
+      } catch (fetchError) {
+        console.error("Google userinfo fetch network error:", fetchError.message);
+      }
     }
 
-    const { email, name } = payload;
+    if (!email) {
+      return res.status(400).json({ error: "Failed to authenticate with Google. Please try again." });
+    }
 
     let user = await User.findOne({ email });
 
@@ -96,7 +127,6 @@ exports.googleLogin = async (req, res) => {
     res.status(500).json({ error: "Internal server error during Google login" });
   }
 };
-
 // Google Login GET handler (for testing/browser check)
 exports.googleLoginCheck = (req, res) => {
   res.json({ 
