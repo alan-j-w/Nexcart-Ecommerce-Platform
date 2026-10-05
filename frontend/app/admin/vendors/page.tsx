@@ -85,8 +85,8 @@ export default function AdminVendors() {
       )}
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", gap: "12px", flex: 1 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px", flex: "1 1 300px", flexWrap: "wrap" }}>
           {/* Stats pills */}
           {[
             { label: "All", count: vendors.length, key: "all" as const },
@@ -109,26 +109,27 @@ export default function AdminVendors() {
           value={search} onChange={e => setSearch(e.target.value)}
           style={{
             padding: "8px 14px", borderRadius: "8px", border: "1px solid #334155",
-            background: "#0F172A", color: "#F8FAFC", fontSize: "13px", width: "220px", outline: "none",
+            background: "#0F172A", color: "#F8FAFC", fontSize: "13px", minWidth: "180px", flex: "1 1 200px", outline: "none",
           }}
         />
       </div>
 
       {/* Table */}
-      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden" }}>
+      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden", width: "100%" }}>
         {loading ? (
           <div style={{ padding: "60px", textAlign: "center", color: "#475569" }}>Loading...</div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: "60px", textAlign: "center", color: "#475569" }}>No vendors found</div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #334155" }}>
-                {["Vendor", "Email", "Joined", "Status", "Actions"].map(h => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
+          <div className="mm-table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "620px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #334155" }}>
+                  {["Vendor", "Email", "Joined", "Status", "Actions"].map(h => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
             <tbody>
               {filtered.map(v => (
                 <tr key={v._id} style={{ borderBottom: "1px solid #0F172A" }}
@@ -182,35 +183,38 @@ export default function AdminVendors() {
               ))}
             </tbody>
           </table>
+        </div>
         )}
       </div>
 
       {/* Past / Deleted */}
       {past.length > 0 && (
-        <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden", opacity: 0.7 }}>
+        <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden", opacity: 0.7, width: "100%" }}>
           <div style={{ padding: "14px 20px", borderBottom: "1px solid #334155" }}>
             <h3 style={{ margin: 0, fontSize: "14px", color: "#EF4444", fontWeight: 700 }}>Deleted Vendors ({past.length})</h3>
           </div>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #334155" }}>
-                {["Vendor", "Email", "Joined"].map(h => (
-                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {past.map(v => (
-                <tr key={v._id} style={{ borderBottom: "1px solid #0F172A" }}>
-                  <td style={{ padding: "10px 16px", color: "#64748B", textDecoration: "line-through", fontSize: "13px" }}>{v.name}</td>
-                  <td style={{ padding: "10px 16px", color: "#475569", fontSize: "13px" }}>{v.email}</td>
-                  <td style={{ padding: "10px 16px", color: "#475569", fontSize: "12px" }}>
-                    {v.createdAt ? new Date(v.createdAt).toLocaleDateString("en-IN") : "N/A"}
-                  </td>
+          <div className="mm-table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #334155" }}>
+                  {["Vendor", "Email", "Joined"].map(h => (
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {past.map(v => (
+                  <tr key={v._id} style={{ borderBottom: "1px solid #0F172A" }}>
+                    <td style={{ padding: "10px 16px", color: "#64748B", textDecoration: "line-through", fontSize: "13px" }}>{v.name}</td>
+                    <td style={{ padding: "10px 16px", color: "#475569", fontSize: "13px" }}>{v.email}</td>
+                    <td style={{ padding: "10px 16px", color: "#475569", fontSize: "12px" }}>
+                      {v.createdAt ? new Date(v.createdAt).toLocaleDateString("en-IN") : "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

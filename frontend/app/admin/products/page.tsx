@@ -70,72 +70,74 @@ export default function AdminProducts() {
           ))}
         </div>
         <input type="text" placeholder="Search products or vendor..." value={search} onChange={e => setSearch(e.target.value)}
-          style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #334155", background: "#0F172A", color: "#F8FAFC", fontSize: "13px", width: "240px", outline: "none" }}
+          style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #334155", background: "#0F172A", color: "#F8FAFC", fontSize: "13px", minWidth: "180px", flex: "1 1 200px", outline: "none" }}
         />
       </div>
 
       {/* Table */}
-      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden" }}>
+      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden", width: "100%" }}>
         {loading ? (
           <div style={{ padding: "60px", textAlign: "center", color: "#475569" }}>Loading...</div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: "60px", textAlign: "center", color: "#475569" }}>No products found</div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #334155" }}>
-                {["Product", "Vendor", "Category", "Price", "Stock", "Status", "Action"].map(h => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(p => (
-                <tr key={p._id} style={{ borderBottom: "1px solid #0F172A" }}
-                  onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#0F172A"}
-                  onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = ""}
-                >
-                  <td style={{ padding: "12px 16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <div style={{ width: "44px", height: "44px", borderRadius: "8px", overflow: "hidden", background: "#0F172A", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        {p.images?.[0]
-                          ? <img src={p.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8L12 3 3 8v8l9 5 9-5V8z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                        }
-                      </div>
-                      <div>
-                        <div style={{ color: "#F8FAFC", fontWeight: 600, fontSize: "13px" }}>{p.name}</div>
-                        <div style={{ color: "#475569", fontSize: "11px", marginTop: "2px" }}>{p.description?.slice(0, 40)}...</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#94A3B8", fontSize: "13px" }}>{p.vendor?.name || "—"}</td>
-                  <td style={{ padding: "12px 16px" }}>
-                    <span style={{ padding: "2px 8px", borderRadius: "4px", background: "#0F172A", color: "#94A3B8", fontSize: "12px" }}>{p.category || "—"}</span>
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#FBBF24", fontWeight: 700, fontSize: "14px" }}>₹{p.price?.toLocaleString("en-IN")}</td>
-                  <td style={{ padding: "12px 16px", color: p.stock > 0 ? "#34D399" : "#EF4444", fontWeight: 600 }}>{p.stock}</td>
-                  <td style={{ padding: "12px 16px" }}>
-                    <span style={{
-                      padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600,
-                      background: p.isActive ? "#052E16" : "#1E293B",
-                      color: p.isActive ? "#34D399" : "#64748B",
-                    }}>{p.isActive ? "Active" : "Hidden"}</span>
-                  </td>
-                  <td style={{ padding: "12px 16px" }}>
-                    <button onClick={() => toggleActive(p._id)} disabled={busy === p._id}
-                      style={{
-                        padding: "5px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
-                        border: "1px solid #334155", background: "#0F172A", color: "#94A3B8",
-                        transition: "all 0.15s",
-                      }}>
-                      {busy === p._id ? "..." : p.isActive ? "Hide" : "Show"}
-                    </button>
-                  </td>
+          <div className="mm-table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "680px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #334155" }}>
+                  {["Product", "Vendor", "Category", "Price", "Stock", "Status", "Action"].map(h => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map(p => (
+                  <tr key={p._id} style={{ borderBottom: "1px solid #0F172A" }}
+                    onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#0F172A"}
+                    onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = ""}
+                  >
+                    <td style={{ padding: "12px 16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <div style={{ width: "44px", height: "44px", borderRadius: "8px", overflow: "hidden", background: "#0F172A", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          {p.images?.[0]
+                            ? <img src={p.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#334155" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8L12 3 3 8v8l9 5 9-5V8z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                          }
+                        </div>
+                        <div>
+                          <div style={{ color: "#F8FAFC", fontWeight: 600, fontSize: "13px" }}>{p.name}</div>
+                          <div style={{ color: "#475569", fontSize: "11px", marginTop: "2px" }}>{p.description?.slice(0, 40)}...</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#94A3B8", fontSize: "13px" }}>{p.vendor?.name || "—"}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ padding: "2px 8px", borderRadius: "4px", background: "#0F172A", color: "#94A3B8", fontSize: "12px" }}>{p.category || "—"}</span>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#FBBF24", fontWeight: 700, fontSize: "14px" }}>₹{p.price?.toLocaleString("en-IN")}</td>
+                    <td style={{ padding: "12px 16px", color: p.stock > 0 ? "#34D399" : "#EF4444", fontWeight: 600 }}>{p.stock}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{
+                        padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600,
+                        background: p.isActive ? "#052E16" : "#1E293B",
+                        color: p.isActive ? "#34D399" : "#64748B",
+                      }}>{p.isActive ? "Active" : "Hidden"}</span>
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <button onClick={() => toggleActive(p._id)} disabled={busy === p._id}
+                        style={{
+                          padding: "5px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
+                          border: "1px solid #334155", background: "#0F172A", color: "#94A3B8",
+                          transition: "all 0.15s",
+                        }}>
+                        {busy === p._id ? "..." : p.isActive ? "Hide" : "Show"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

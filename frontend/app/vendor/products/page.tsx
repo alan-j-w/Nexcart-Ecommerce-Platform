@@ -200,16 +200,16 @@ export default function VendorProducts() {
   );
 
   return (
-    <div style={{ display: "flex", gap: "24px", alignItems: "flex-start" }}>
+    <div className="mm-vendor-product-layout">
       {/* Toast */}
       {toast && <div style={{ position: "fixed", top: "20px", right: "20px", background: "#1E293B", color: "#F8FAFC", padding: "12px 20px", borderRadius: "8px", zIndex: 999, border: "1px solid #334155" }}>{toast}</div>}
 
       {/* Left: Product list */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px", minWidth: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px", minWidth: 0, width: "100%" }}>
         {/* Toolbar */}
-        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
           <input type="text" placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)}
-            style={{ flex: 1, padding: "9px 14px", borderRadius: "8px", border: "1px solid #E2E8F0", fontSize: "13px", outline: "none", background: "#fff" }}
+            style={{ flex: "1 1 200px", minWidth: "160px", padding: "9px 14px", borderRadius: "8px", border: "1px solid #E2E8F0", fontSize: "13px", outline: "none", background: "#fff" }}
           />
           <button onClick={() => { setShowForm(true); setEditProduct(null); }} style={{
             display: "flex", alignItems: "center", gap: "8px", padding: "9px 18px",
@@ -221,7 +221,7 @@ export default function VendorProducts() {
         </div>
 
         {/* Table */}
-        <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", overflow: "hidden" }}>
+        <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", overflow: "hidden", width: "100%" }}>
           {loading ? (
             <div style={{ padding: "60px", textAlign: "center", color: "#94A3B8" }}>Loading...</div>
           ) : filtered.length === 0 ? (
@@ -229,15 +229,16 @@ export default function VendorProducts() {
               {products.length === 0 ? "No products yet — add your first product!" : "No products matching search"}
             </div>
           ) : (
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid #E2E8F0" }}>
-                  {["Product", "Category", "Price", "Stock", "Status", "Edit"].map(h => (
-                    <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
+            <div className="mm-table-responsive">
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "580px" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #E2E8F0" }}>
+                    {["Product", "Category", "Price", "Stock", "Status", "Edit"].map(h => (
+                      <th key={h} style={{ padding: "11px 16px", textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
                 {filtered.map(p => (
                   <tr key={p._id} style={{ borderBottom: "1px solid #F1F5F9" }}
                     onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#F8FAFC"}
@@ -297,13 +298,14 @@ export default function VendorProducts() {
                 ))}
               </tbody>
             </table>
+          </div>
           )}
         </div>
       </div>
 
       {/* Right: Add/Edit form panel */}
       {(showForm || editProduct) && (
-        <div style={{ width: "420px", flexShrink: 0, background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", padding: "22px", position: "sticky", top: "80px", maxHeight: "calc(100vh - 100px)", overflowY: "auto" }}>
+        <div className="mm-vendor-product-form">
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
             <h3 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "#1E293B" }}>
               {editProduct ? "Edit Product" : "Add New Product"}

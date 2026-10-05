@@ -198,20 +198,18 @@ export default function AdminCategories() {
               </span>
             </div>
           </div>
-          <div style={{ marginTop: "24px", display: "flex", gap: "16px", background: "#fff", padding: "16px 32px", borderRadius: "12px" }}>
-            <div className="mm-input-group" style={{ marginBottom: 0, width: "300px" }}>
+          <div style={{ marginTop: "24px", display: "flex", flexWrap: "wrap", gap: "12px", background: "#fff", padding: "16px", borderRadius: "12px", maxWidth: "92vw", justifyContent: "center" }}>
+            <div className="mm-input-group" style={{ marginBottom: 0, width: "100%", maxWidth: "300px" }}>
               <label>Zoom</label>
               <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} style={{ width: "100%" }} />
             </div>
-            <button className="mm-btn-secondary" onClick={cancelCrop} style={{ width: "120px" }}>Cancel</button>
-            <button className="mm-btn-primary" onClick={handleCropImage} style={{ width: "120px" }}>Crop & Save</button>
+            <button className="mm-btn-secondary" onClick={cancelCrop} style={{ flex: "1 1 100px", maxWidth: "140px" }}>Cancel</button>
+            <button className="mm-btn-primary" onClick={handleCropImage} style={{ flex: "1 1 100px", maxWidth: "140px" }}>Crop & Save</button>
           </div>
         </div>
       )}
 
-
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "24px" }}>     
+      <div className="mm-admin-split-grid">     
         {/* Add/Edit Form */}
         <div style={{ background: "#fff", padding: "24px", borderRadius: "8px", border: "1px solid #E5E7EB", height: "fit-content" }}>
           <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>

@@ -335,7 +335,7 @@ export default function VendorAnalytics() {
       </div>
 
       {/* Summary Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))", gap: "14px" }}>
         {[
           {
             label: "Net Earnings",
@@ -391,7 +391,7 @@ export default function VendorAnalytics() {
       </div>
 
       {/* Main charts */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: "20px" }}>
         {/* Earnings Curve */}
         <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", padding: "20px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
@@ -416,7 +416,7 @@ export default function VendorAnalytics() {
       </div>
 
       {/* Breakdowns */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: "20px" }}>
         {/* Category breakdown */}
         <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", padding: "20px" }}>
           <h3 style={{ margin: "0 0 16px", fontSize: "14px", fontWeight: 700, color: "#1E293B" }}>Your Category Share</h3>

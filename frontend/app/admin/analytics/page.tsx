@@ -334,7 +334,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Overview Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: "14px" }}>
         {[
           {
             label: "Gross Merchandise Value",
@@ -390,7 +390,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Main Charts Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 360px), 1fr))", gap: "20px" }}>
         {/* Weekly Revenue Curve */}
         <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", padding: "20px 24px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
@@ -415,7 +415,7 @@ export default function AdminAnalytics() {
       </div>
 
       {/* Secondary Row (Breakdowns) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: "20px" }}>
         {/* Category breakdown */}
         <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", padding: "24px", display: "flex", flexDirection: "column" }}>
           <h3 style={{ margin: "0 0 20px", fontSize: "14px", fontWeight: 700, color: "#F8FAFC" }}>Sales Category Breakdown</h3>

@@ -89,7 +89,7 @@ export default function VendorDashboard() {
       {loading ? (
         <div style={{ textAlign: "center", color: "#94A3B8", padding: "40px" }}>Loading stats...</div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 180px), 1fr))", gap: "14px" }}>
           {cards.map(c => (
             <div key={c.label} onClick={() => router.push(c.href)} style={{
               background: "#fff", borderRadius: "12px", padding: "20px",
@@ -111,7 +111,7 @@ export default function VendorDashboard() {
       )}
 
       {/* Recent Orders */}
-      <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", overflow: "hidden" }}>
+      <div style={{ background: "#fff", borderRadius: "12px", border: "1px solid #E2E8F0", overflow: "hidden", width: "100%" }}>
         <div style={{ padding: "16px 20px", borderBottom: "1px solid #E2E8F0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h3 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "#1E293B" }}>Recent Orders</h3>
           <a href="/vendor/orders" style={{ fontSize: "13px", color: "#6D28D9", fontWeight: 600 }}>View all →</a>
@@ -119,28 +119,30 @@ export default function VendorDashboard() {
         {!stats?.recentOrders?.length ? (
           <div style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>No orders yet</div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #E2E8F0" }}>
-                {["Order ID", "Customer", "Items", "Earnings", "Status"].map(h => (
-                  <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {stats.recentOrders.map((o: any) => (
-                <tr key={o._id} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                  <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px", fontFamily: "monospace" }}>#{o._id.slice(-8).toUpperCase()}</td>
-                  <td style={{ padding: "12px 16px", color: "#1E293B", fontSize: "13px", fontWeight: 600 }}>{o.user?.name || "Customer"}</td>
-                  <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px" }}>{o.items?.length} item{o.items?.length !== 1 ? "s" : ""}</td>
-                  <td style={{ padding: "12px 16px", color: "#059669", fontWeight: 700 }}>₹{o.vendorTotal?.toLocaleString("en-IN")}</td>
-                  <td style={{ padding: "12px 16px" }}>
-                    <span style={{ padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, ...(STATUS_STYLE[o.status] || {}) }}>{o.status}</span>
-                  </td>
+          <div className="mm-table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "560px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #E2E8F0" }}>
+                  {["Order ID", "Customer", "Items", "Earnings", "Status"].map(h => (
+                    <th key={h} style={{ padding: "10px 16px", textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, textTransform: "uppercase" }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {stats.recentOrders.map((o: any) => (
+                  <tr key={o._id} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                    <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px", fontFamily: "monospace" }}>#{o._id.slice(-8).toUpperCase()}</td>
+                    <td style={{ padding: "12px 16px", color: "#1E293B", fontSize: "13px", fontWeight: 600 }}>{o.user?.name || "Customer"}</td>
+                    <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px" }}>{o.items?.length} item{o.items?.length !== 1 ? "s" : ""}</td>
+                    <td style={{ padding: "12px 16px", color: "#059669", fontWeight: 700 }}>₹{o.vendorTotal?.toLocaleString("en-IN")}</td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{ padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, ...(STATUS_STYLE[o.status] || {}) }}>{o.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

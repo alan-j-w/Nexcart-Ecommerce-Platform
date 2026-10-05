@@ -67,31 +67,31 @@ export default function ProductDetailClient({ id }: { id: string }) {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
-        <div style={{ display: "flex", gap: "40px", background: "#fff", borderRadius: "4px", padding: "30px" }}>
+      <div className="mm-pdp-container">
+        <div className="mm-pdp-card">
           {/* Left image skeleton */}
-          <div style={{ width: "400px", flexShrink: 0 }}>
-            <div className="animate-pulse" style={{ width: "100%", height: "400px", background: "#F3F4F6", borderRadius: "4px" }} />
+          <div className="mm-pdp-gallery">
+            <div className="animate-pulse mm-pdp-main-image-wrap" style={{ background: "#F3F4F6", border: "1px solid #E5E7EB" }} />
           </div>
           
           {/* Middle details skeleton */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div className="animate-pulse" style={{ height: "32px", background: "#e5e7eb", width: "80%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "30%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "20px", background: "#e5e7eb", width: "40%", borderRadius: "4px" }} />
-            <hr style={{ border: "none", borderTop: "1px solid #E5E7EB", margin: "4px 0" }} />
-            <div className="animate-pulse" style={{ height: "36px", background: "#e5e7eb", width: "50%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "60%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "80px", background: "#e5e7eb", width: "95%", borderRadius: "4px" }} />
+          <div className="mm-pdp-info" style={{ gap: "14px" }}>
+            <div className="animate-pulse" style={{ height: "28px", background: "#e5e7eb", width: "80%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "35%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "18px", background: "#e5e7eb", width: "45%", borderRadius: "4px" }} />
+            <hr className="mm-pdp-divider" />
+            <div className="animate-pulse" style={{ height: "32px", background: "#e5e7eb", width: "50%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "65%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "90px", background: "#e5e7eb", width: "100%", borderRadius: "6px" }} />
           </div>
 
           {/* Right buy box skeleton */}
-          <div style={{ width: "260px", flexShrink: 0, border: "1px solid #E5E7EB", borderRadius: "8px", padding: "20px", height: "300px", display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div className="animate-pulse" style={{ height: "36px", background: "#e5e7eb", width: "60%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "80%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "40%", borderRadius: "4px" }} />
-            <div className="animate-pulse" style={{ height: "40px", background: "#e5e7eb", borderRadius: "6px" }} />
-            <div className="animate-pulse" style={{ height: "40px", background: "#e5e7eb", borderRadius: "6px" }} />
+          <div className="mm-pdp-buybox" style={{ gap: "14px" }}>
+            <div className="animate-pulse" style={{ height: "32px", background: "#e5e7eb", width: "60%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "75%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "16px", background: "#e5e7eb", width: "45%", borderRadius: "4px" }} />
+            <div className="animate-pulse" style={{ height: "42px", background: "#e5e7eb", borderRadius: "24px" }} />
+            <div className="animate-pulse" style={{ height: "42px", background: "#e5e7eb", borderRadius: "24px" }} />
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
         </div>
         <h3>Failed to load product</h3>
         <p style={{ color: "#6B7280", marginBottom: "20px" }}>
-          We had trouble fetching the product details. The database might be waking up.
+          We had trouble fetching the product details. Please try again.
         </p>
         <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
           <button onClick={handleRetry} className="mm-btn-primary" style={{ width: "auto", padding: "10px 24px" }}>

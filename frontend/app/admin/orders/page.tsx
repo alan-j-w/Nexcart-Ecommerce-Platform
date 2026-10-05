@@ -87,25 +87,26 @@ export default function AdminOrders() {
           ))}
         </div>
         <input type="text" placeholder="Search by order ID or customer..." value={search} onChange={e => setSearch(e.target.value)}
-          style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #334155", background: "#0F172A", color: "#F8FAFC", fontSize: "13px", width: "260px", outline: "none", marginLeft: "auto" }}
+          style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #334155", background: "#0F172A", color: "#F8FAFC", fontSize: "13px", minWidth: "180px", flex: "1 1 220px", outline: "none" }}
         />
       </div>
 
       {/* Table */}
-      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden" }}>
+      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden", width: "100%" }}>
         {loading ? (
           <div style={{ padding: "60px", textAlign: "center", color: "#475569" }}>Loading...</div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: "60px", textAlign: "center", color: "#475569" }}>No orders found</div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #334155" }}>
-                {["Order ID", "Customer", "Items", "Amount", "Status", "Date", "Update"].map(h => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
+          <div className="mm-table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "720px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #334155" }}>
+                  {["Order ID", "Customer", "Items", "Amount", "Status", "Date", "Update"].map(h => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "11px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
             <tbody>
               {filtered.map(o => (
                 <tr key={o._id} style={{ borderBottom: "1px solid #0F172A" }}
@@ -158,6 +159,7 @@ export default function AdminOrders() {
               ))}
             </tbody>
           </table>
+        </div>
         )}
       </div>
     </div>

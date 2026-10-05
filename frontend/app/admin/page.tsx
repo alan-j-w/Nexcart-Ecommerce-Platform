@@ -101,9 +101,9 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px", minWidth: 0, width: "100%" }}>
       {/* Stats grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: "14px" }}>
         {cards.map(c => <StatCard key={c.label} {...c} />)}
       </div>
 
@@ -112,8 +112,9 @@ export default function AdminDashboard() {
         <div style={{
           background: "#422006", border: "1px solid #92400E", borderRadius: "10px",
           padding: "14px 18px", display: "flex", alignItems: "center", gap: "12px",
+          flexWrap: "wrap",
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
             <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
             <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
@@ -129,50 +130,52 @@ export default function AdminDashboard() {
       )}
 
       {/* Recent Orders */}
-      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden" }}>
-        <div style={{ padding: "18px 24px", borderBottom: "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ background: "#1E293B", borderRadius: "12px", border: "1px solid #334155", overflow: "hidden", width: "100%" }}>
+        <div style={{ padding: "18px 20px", borderBottom: "1px solid #334155", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <h2 style={{ margin: 0, fontSize: "15px", fontWeight: 700, color: "#F8FAFC" }}>Recent Orders</h2>
-          <a href="/admin/orders" style={{ fontSize: "13px", color: "#6D28D9", fontWeight: 600 }}>View all →</a>
+          <a href="/admin/orders" style={{ fontSize: "13px", color: "#8B5CF6", fontWeight: 600 }}>View all →</a>
         </div>
         {!stats?.recentOrders?.length ? (
           <div style={{ padding: "40px", textAlign: "center", color: "#475569" }}>No orders yet</div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #334155" }}>
-                {["Order ID", "Customer", "Amount", "Status", "Date"].map(h => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {stats?.recentOrders.map((order: any) => (
-                <tr key={order._id} style={{ borderBottom: "1px solid #1E293B" }}
-                  onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#0F172A"}
-                  onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = ""}
-                >
-                  <td style={{ padding: "12px 16px", color: "#94A3B8", fontSize: "13px", fontFamily: "monospace" }}>
-                    #{order._id.slice(-8).toUpperCase()}
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#F8FAFC", fontSize: "13px" }}>
-                    {order.user?.name || "Guest"}
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#FBBF24", fontWeight: 700, fontSize: "14px" }}>
-                    ₹{order.totalAmount?.toLocaleString("en-IN")}
-                  </td>
-                  <td style={{ padding: "12px 16px" }}>
-                    <span style={{
-                      padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600,
-                      ...(STATUS_COLORS[order.status] || { bg: "#1E293B", color: "#94A3B8" }),
-                    }}>{order.status}</span>
-                  </td>
-                  <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px" }}>
-                    {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                  </td>
+          <div className="mm-table-responsive">
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "560px" }}>
+              <thead>
+                <tr style={{ borderBottom: "1px solid #334155" }}>
+                  {["Order ID", "Customer", "Amount", "Status", "Date"].map(h => (
+                    <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontSize: "12px", color: "#64748B", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{h}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {stats?.recentOrders.map((order: any) => (
+                  <tr key={order._id} style={{ borderBottom: "1px solid #1E293B" }}
+                    onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = "#0F172A"}
+                    onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = ""}
+                  >
+                    <td style={{ padding: "12px 16px", color: "#94A3B8", fontSize: "13px", fontFamily: "monospace" }}>
+                      #{order._id.slice(-8).toUpperCase()}
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#F8FAFC", fontSize: "13px" }}>
+                      {order.user?.name || "Guest"}
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#FBBF24", fontWeight: 700, fontSize: "14px" }}>
+                      ₹{order.totalAmount?.toLocaleString("en-IN")}
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <span style={{
+                        padding: "3px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 600,
+                        ...(STATUS_COLORS[order.status] || { bg: "#1E293B", color: "#94A3B8" }),
+                      }}>{order.status}</span>
+                    </td>
+                    <td style={{ padding: "12px 16px", color: "#64748B", fontSize: "12px", whiteSpace: "nowrap" }}>
+                      {new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

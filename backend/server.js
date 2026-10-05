@@ -22,7 +22,7 @@ app.set("trust proxy", 1);
 // Middleware
 // Middleware
 app.use(helmet({
-  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" },
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(express.json({ limit: "10mb" }));

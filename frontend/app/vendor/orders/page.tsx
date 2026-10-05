@@ -93,24 +93,24 @@ export default function VendorOrders() {
               {/* Order header row */}
               <div
                 onClick={() => setExpanded(expanded === o._id ? null : o._id)}
-                style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: "16px", cursor: "pointer" }}
+                style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", cursor: "pointer" }}
                 onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#F8FAFC"}
                 onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = ""}
               >
-                <div style={{ fontFamily: "monospace", fontSize: "13px", color: "#64748B", minWidth: "100px" }}>
+                <div style={{ fontFamily: "monospace", fontSize: "13px", color: "#64748B", minWidth: "90px" }}>
                   #{o._id.slice(-8).toUpperCase()}
                 </div>
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: "1 1 160px", minWidth: "140px" }}>
                   <div style={{ fontWeight: 600, fontSize: "13px", color: "#1E293B" }}>{o.user?.name || "Customer"}</div>
                   <div style={{ fontSize: "11px", color: "#94A3B8" }}>{o.user?.email}</div>
                 </div>
-                <div style={{ fontSize: "13px", color: "#94A3B8" }}>
+                <div style={{ fontSize: "12px", color: "#94A3B8", whiteSpace: "nowrap" }}>
                   {new Date(o.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                 </div>
-                <div style={{ fontWeight: 700, fontSize: "15px", color: "#059669", minWidth: "100px", textAlign: "right" }}>
+                <div style={{ fontWeight: 700, fontSize: "15px", color: "#059669", minWidth: "90px", textAlign: "right", marginLeft: "auto" }}>
                   ₹{o.vendorTotal?.toLocaleString("en-IN")}
                 </div>
-                <span style={{ padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, ...(STATUS_STYLE[o.status] || {}), minWidth: "80px", textAlign: "center" }}>
+                <span style={{ padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: 600, ...(STATUS_STYLE[o.status] || {}), minWidth: "76px", textAlign: "center" }}>
                   {o.status}
                 </span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform 0.2s", transform: expanded === o._id ? "rotate(180deg)" : "none", flexShrink: 0 }}>
@@ -121,30 +121,32 @@ export default function VendorOrders() {
               {/* Expanded items */}
               {expanded === o._id && (
                 <div style={{ borderTop: "1px solid #F1F5F9", padding: "16px 20px", background: "#F8FAFC" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <thead>
-                      <tr>
-                        {["Product", "Qty", "Unit Price", "Subtotal"].map(h => (
-                          <th key={h} style={{ textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, paddingBottom: "8px", textTransform: "uppercase" }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {o.items?.map((item: any, i: number) => (
-                        <tr key={i} style={{ borderTop: "1px solid #E2E8F0" }}>
-                          <td style={{ padding: "10px 0" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                              {item.product?.images?.[0] && <img src={item.product.images[0]} alt="" style={{ width: "36px", height: "36px", borderRadius: "6px", objectFit: "cover" }} />}
-                              <span style={{ fontSize: "13px", fontWeight: 600, color: "#1E293B" }}>{item.product?.name || "Product"}</span>
-                            </div>
-                          </td>
-                          <td style={{ fontSize: "13px", color: "#64748B" }}>×{item.quantity}</td>
-                          <td style={{ fontSize: "13px", color: "#1E293B" }}>₹{item.price?.toLocaleString("en-IN")}</td>
-                          <td style={{ fontSize: "13px", fontWeight: 700, color: "#059669" }}>₹{(item.price * item.quantity)?.toLocaleString("en-IN")}</td>
+                  <div className="mm-table-responsive">
+                    <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
+                      <thead>
+                        <tr>
+                          {["Product", "Qty", "Unit Price", "Subtotal"].map(h => (
+                            <th key={h} style={{ textAlign: "left", fontSize: "11px", color: "#94A3B8", fontWeight: 600, paddingBottom: "8px", textTransform: "uppercase" }}>{h}</th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {o.items?.map((item: any, i: number) => (
+                          <tr key={i} style={{ borderTop: "1px solid #E2E8F0" }}>
+                            <td style={{ padding: "10px 0" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                {item.product?.images?.[0] && <img src={item.product.images[0]} alt="" style={{ width: "36px", height: "36px", borderRadius: "6px", objectFit: "cover" }} />}
+                                <span style={{ fontSize: "13px", fontWeight: 600, color: "#1E293B" }}>{item.product?.name || "Product"}</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: "10px 8px", fontSize: "13px", color: "#64748B" }}>×{item.quantity}</td>
+                            <td style={{ padding: "10px 8px", fontSize: "13px", color: "#1E293B" }}>₹{item.price?.toLocaleString("en-IN")}</td>
+                            <td style={{ padding: "10px 8px", fontSize: "13px", fontWeight: 700, color: "#059669" }}>₹{(item.price * item.quantity)?.toLocaleString("en-IN")}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>

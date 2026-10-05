@@ -154,17 +154,17 @@ export function BackendStatusProvider({
           return Math.min(90, +(prev + delta).toFixed(1));
         });
 
-        // Informative, friendly status messages for Render free tier cold starts
+        // Clean, professional status messages during initial connection
         if (elapsed < 3) {
           setStatusMessage("Connecting to Nexcart services...");
         } else if (elapsed < 14) {
-          setStatusMessage("Waking up cloud server (Render free tier spin-up)...");
+          setStatusMessage("Connecting to cloud server...");
         } else if (elapsed < 30) {
-          setStatusMessage("Almost there! Initializing database & catalog...");
+          setStatusMessage("Almost there! Initializing catalog...");
         } else if (elapsed < 55) {
-          setStatusMessage("Cloud server finishing boot sequence...");
+          setStatusMessage("Finishing secure connection...");
         } else {
-          setStatusMessage("Server is taking longer than usual to wake up.");
+          setStatusMessage("Taking slightly longer than usual to connect...");
         }
       } else {
         // Backend is ONLINE!
