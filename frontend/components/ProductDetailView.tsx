@@ -62,7 +62,10 @@ export default function ProductDetailView({ product }: { product: Product }) {
         <span className="mm-pdp-breadcrumb-sep">›</span>
         {product.category && (
           <>
-            <Link href={`/category/${encodeURIComponent(product.category.toLowerCase())}`}>
+            <Link 
+              href={`/search?category=${encodeURIComponent(product.category.toLowerCase())}`}
+              prefetch={false}
+            >
               {product.category}
             </Link>
             <span className="mm-pdp-breadcrumb-sep">›</span>
